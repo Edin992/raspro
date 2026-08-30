@@ -1,0 +1,725 @@
+/* ============================================
+   ORIGINALNI PROFILE STYLES
+   ============================================ */
+
+/* PROFILE PAGE STYLES */
+
+.profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .profile-stats {
+        border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    .profile-tab {
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s;
+    }
+    .profile-tab.active {
+        border-bottom-color: var(--bs-primary);
+        color: var(--bs-primary) !important;
+    }
+    .ad-grid-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        transition: transform 0.3s;
+    }
+    .ad-grid-item:hover {
+        transform: scale(1.02);
+    }
+    .ad-grid-item.premium::before {
+        content: '⭐ PREMIUM';
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(255,193,7,0.9);
+        color: #000;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        z-index: 10;
+    }
+    .follow-btn {
+        min-width: 120px;
+    }
+    .profile-package-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+    }
+    
+    
+.profile-avatar {
+    border: 3px solid var(--bs-primary);
+    box-shadow: 0 0.5rem 1rem rgba(var(--bs-primary-rgb), 0.15);
+    transition: transform 0.3s;
+}
+
+.profile-avatar:hover {
+    transform: scale(1.05);
+}
+
+.stat-card {
+    transition: all 0.3s ease;
+    border-width: 2px;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+/* Badge styles */
+.profile-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+}
+
+/* Activity timeline */
+.activity-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.activity-timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e9ecef;
+}
+
+.activity-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.activity-item::before {
+    content: '';
+    position: absolute;
+    left: -23px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--bs-primary);
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--bs-primary);
+}
+
+/* Povećaj klikabilnost kartica */
+.ad-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.ad-card-link:hover {
+    transform: translateY(-3px);
+    color: inherit;
+}
+
+/* Stil za celokupnu karticu da bude klikabilna */
+.card {
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+}
+
+/* Form styles in modals */
+#editProfileForm .form-control:focus,
+#changePasswordForm .form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .profile-avatar {
+        width: 120px !important;
+        height: 120px !important;
+    }
+    
+    .stat-card h4 {
+        font-size: 1.2rem;
+    }
+}
+
+/* ============================================
+   PUBLIC PROFILE STYLES (Instagram-like)
+   Dodato na postojeći profile.css
+   ============================================ */
+
+/* PROFILE HEADER */
+.profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.profile-header .profile-avatar {
+    border: 4px solid white;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.profile-stats {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
+
+.profile-stats .col-4 {
+    padding: 0.5rem;
+}
+
+.profile-stats strong {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.profile-stats .small {
+    opacity: 0.85;
+    font-size: 0.85rem;
+}
+
+/* PAKET BADGE */
+.profile-package-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* TABS NAVIGACIJA */
+.profile-tab {
+    border: none;
+    background: none;
+    padding: 0.75rem 1.25rem;
+    color: #6c757d;
+    font-weight: 500;
+    position: relative;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.profile-tab:hover {
+    color: #495057;
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.profile-tab.active {
+    color: var(--bs-primary) !important;
+    border-bottom-color: var(--bs-primary);
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+
+.profile-tab .badge {
+    font-size: 0.65rem;
+    padding: 0.25em 0.5em;
+    min-width: 24px;
+}
+
+/* TAB CONTENT */
+.tab-content {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* AD GRID (Instagram galerija) */
+.ad-grid-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    height: 100%;
+}
+
+.ad-grid-item:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border-color: var(--bs-primary);
+}
+
+.ad-grid-item.premium::before {
+    content: '⭐ PREMIUM';
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #000;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    z-index: 10;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.ad-grid-item .card-img-top {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.ad-grid-item:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.ad-grid-item .card-body {
+    padding: 1.25rem;
+}
+
+.ad-grid-item .card-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 0.75rem;
+    height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.ad-grid-link {
+    text-decoration: none;
+    color: inherit;
+    height: 100%;
+}
+
+.ad-grid-link:hover {
+    color: inherit;
+}
+
+/* LOAD MORE BUTTON */
+#loadMoreAds {
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s;
+    border-width: 2px;
+}
+
+#loadMoreAds:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* FOLLOW BUTTON ANIMATIONS */
+.follow-btn {
+    min-width: 120px;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.follow-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.follow-btn:active {
+    transform: translateY(0);
+}
+
+.follow-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* FOLLOWER COUNT ANIMATION */
+.follower-count {
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.follower-updated {
+    animation: pulse 1s ease;
+    color: var(--bs-success) !important;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* REVIEW STARS */
+.review-star {
+    cursor: pointer;
+    transition: color 0.2s;
+    font-size: 1.2rem;
+}
+
+.review-star:hover {
+    color: #ffc107 !important;
+}
+
+.star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 2px;
+}
+
+/* REVIEW PROGRESS BARS */
+.progress {
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 5px;
+    transition: width 0.6s ease;
+}
+
+/* SHARE SECTION */
+.share-section .btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.share-section .btn:hover {
+    transform: translateY(-3px);
+}
+
+#profileLink {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* QR CODE CONTAINER */
+#qrCodeContainer {
+    animation: slideUp 0.3s ease;
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* MESSAGE COUNTER */
+#messageCounter {
+    font-size: 0.85rem;
+    text-align: right;
+    margin-top: 0.25rem;
+}
+
+/* REPORT BUTTON */
+#reportButton {
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+}
+
+/* AVATAR UPLOAD PREVIEW */
+#avatar-preview {
+    transition: transform 0.3s;
+    border: 3px solid #dee2e6;
+}
+
+#avatar-preview:hover {
+    transform: scale(1.05);
+}
+
+/* STAT CARDS */
+.stat-card {
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--bs-primary);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.border-primary .card-body {
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.05), transparent);
+}
+
+.stat-card.border-success .card-body {
+    background: linear-gradient(135deg, rgba(25, 135, 84, 0.05), transparent);
+}
+
+/* ACTIVITY TIMELINE */
+.activity-timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.activity-timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--bs-primary), var(--bs-info));
+}
+
+.activity-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0;
+}
+
+.activity-item::before {
+    content: '';
+    position: absolute;
+    left: -23px;
+    top: 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--bs-primary);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.2);
+    z-index: 2;
+}
+
+.activity-item .activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+/* BADGE VARIJANTE */
+.badge.bg-gradient {
+    background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+    color: white;
+    border: none;
+}
+
+.badge.bg-warning.text-dark {
+    background: linear-gradient(135deg, #ffd700, #ffa500);
+    color: #000;
+    font-weight: 700;
+}
+
+.badge.bg-secondary {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+}
+
+/* RESPONSIVE ADJUSTMENTS */
+@media (max-width: 768px) {
+    .profile-header {
+        padding: 1rem 0;
+    }
+    
+    .profile-avatar {
+        width: 100px !important;
+        height: 100px !important;
+    }
+    
+    .profile-stats .fs-4 {
+        font-size: 1.5rem !important;
+    }
+    
+    .profile-tab {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .ad-grid-item .card-img-top {
+        height: 150px;
+    }
+    
+    .ad-grid-item .card-title {
+        font-size: 0.85rem;
+        height: 36px;
+    }
+    
+    .follow-btn {
+        min-width: 100px;
+        padding: 0.4rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .profile-package-badge {
+        font-size: 0.65rem;
+        padding: 4px 8px;
+        top: 5px;
+        right: 5px;
+    }
+}
+
+@media (max-width: 576px) {
+    .profile-tab {
+        flex: 1;
+        justify-content: center;
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+    
+    .profile-tab i {
+        display: none;
+    }
+    
+    .ad-grid-item {
+        border-radius: 8px;
+    }
+    
+    .ad-grid-item.premium::before {
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        top: 8px;
+        left: 8px;
+    }
+    
+    .share-section .btn {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* DARK MODE SUPPORT */
+@media (prefers-color-scheme: dark) {
+    .ad-grid-item {
+        background: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .ad-grid-item .card-title {
+        color: #e2e8f0;
+    }
+    
+    .ad-grid-item .text-muted {
+        color: #a0aec0 !important;
+    }
+    
+    .badge.bg-light.text-dark {
+        background-color: #4a5568 !important;
+        color: #e2e8f0 !important;
+    }
+    
+    #profileLink {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .progress {
+        background-color: #4a5568;
+    }
+}
+
+/* PRINT STYLES */
+@media print {
+    .profile-header {
+        background: none !important;
+        color: black !important;
+        border-bottom: 2px solid #000;
+    }
+    
+    .profile-tab,
+    .follow-btn,
+    .share-section,
+    #loadMoreAds {
+        display: none !important;
+    }
+    
+    .ad-grid-item {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}
+
+/* ACCESSIBILITY */
+@media (prefers-reduced-motion: reduce) {
+    .ad-grid-item,
+    .follow-btn,
+    .stat-card,
+    .profile-tab,
+    .share-section .btn {
+        transition: none !important;
+    }
+    
+    .follower-updated {
+        animation: none !important;
+    }
+}
+
+/* HIGH CONTRAST MODE */
+@media (prefers-contrast: high) {
+    .profile-header {
+        background: #000 !important;
+        color: #fff !important;
+    }
+    
+    .ad-grid-item {
+        border: 2px solid #000 !important;
+    }
+    
+    .profile-tab.active {
+        border-bottom: 3px solid #000 !important;
+        color: #000 !important;
+    }
+}

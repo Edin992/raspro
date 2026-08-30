@@ -1,0 +1,142 @@
+/* assets/css/safety.css - Stilovi za stranicu o bezbednosti */
+
+/* HERO SECTION */
+.safety-hero {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border-radius: 0 0 20px 20px;
+    margin-top: -1rem;
+}
+
+.safety-hero-icon i {
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+    animation: safetyFloat 3s infinite ease-in-out;
+}
+
+@keyframes safetyFloat {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.05); }
+}
+
+.safety-stat {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* SAFETY TIP CARDS */
+.safety-tip-card {
+    transition: all 0.3s ease;
+    border-width: 3px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.safety-tip-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+
+.safety-tip-icon {
+    transition: transform 0.5s ease;
+}
+
+.safety-tip-card:hover .safety-tip-icon {
+    transform: scale(1.2) rotate(5deg);
+}
+
+/* ACCORDION STYLES */
+.accordion-button {
+    font-weight: 600;
+    padding: 1rem 1.25rem;
+    background-color: rgba(0,0,0,0.02);
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary);
+    border-bottom: 2px solid var(--bs-primary);
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.accordion-body {
+    background-color: rgba(0,0,0,0.01);
+}
+
+.accordion-body ul {
+    padding-left: 1.5rem;
+}
+
+.accordion-body li {
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+/* REPORT STEPS */
+.report-step-icon .badge {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+}
+
+/* CARD HEADERS */
+.card-header.bg-primary,
+.card-header.bg-success,
+.card-header.bg-danger {
+    border-radius: 8px 8px 0 0 !important;
+}
+
+/* ALERTS */
+.alert {
+    border-radius: 10px;
+    border-left: 5px solid;
+}
+
+.alert-warning {
+    border-left-color: var(--bs-warning);
+}
+
+.alert-success {
+    border-left-color: var(--bs-success);
+}
+
+.alert-info {
+    border-left-color: var(--bs-info);
+}
+
+.alert-danger {
+    border-left-color: var(--bs-danger);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .safety-hero {
+        padding: 3rem 0;
+    }
+    
+    .safety-hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .safety-stat {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+    
+    .safety-tip-card {
+        margin-bottom: 1rem;
+    }
+    
+    .accordion-button {
+        font-size: 0.95rem;
+        padding: 0.75rem 1rem;
+    }
+}

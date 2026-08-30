@@ -1,0 +1,419 @@
+/**
+ * assets/css/categories.css - Stilovi za stranicu kategorija
+ * DARK MODE COMPATIBLE - REDIZAJNIRANA VERZIJA
+ */
+
+/* ===== HERO SECTION ===== */
+.categories-hero {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #764ba2 100%);
+    border-radius: 0 0 30px 30px;
+    margin-top: -1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.categories-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.categories-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -5%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+}
+
+.categories-hero .display-4 {
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ===== KARTICE KATEGORIJA ===== */
+.category-card {
+    display: block;
+    text-decoration: none;
+}
+
+.category-card-inner {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid var(--bs-border-color);
+    background: var(--bs-body-bg);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.category-card-inner:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 35px rgba(0,0,0,0.12);
+    border-color: var(--bs-primary);
+}
+
+.category-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 50%;
+    transition: all 0.4s ease;
+}
+
+.category-card-inner:hover .category-icon {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+}
+
+.category-card-inner .card-title {
+    color: var(--bs-heading-color);
+    transition: color 0.3s ease;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.category-card-inner:hover .card-title {
+    color: var(--bs-primary);
+}
+
+/* ===== KARTICE GRUPA KATEGORIJA ===== */
+.category-group-card {
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border: 1px solid var(--bs-border-color);
+    background: var(--bs-body-bg);
+    border-radius: 20px;
+}
+
+.category-group-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border-color: var(--bs-primary);
+}
+
+.category-group-card .card-header {
+    background: transparent;
+    border-bottom: 2px solid rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.category-group-card .card-header h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.category-group-card .card-header a {
+    color: var(--bs-heading-color);
+    transition: color 0.3s ease;
+}
+
+.category-group-card .card-header a:hover {
+    color: var(--bs-primary);
+}
+
+/* Podkategorija linkovi */
+.subcategory-link {
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    color: var(--bs-body-color);
+    border-radius: 8px;
+}
+
+.subcategory-link:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    transform: translateX(4px);
+    color: var(--bs-primary) !important;
+}
+
+.subcategory-link span {
+    transition: color 0.2s ease;
+}
+
+.subcategory-link:hover span {
+    color: var(--bs-primary);
+}
+
+.subcategory-link i {
+    transition: transform 0.2s ease;
+}
+
+.subcategory-link:hover i {
+    transform: translateX(3px);
+}
+
+/* Badge broj oglasa u podkategoriji */
+.subcategory-link small {
+    font-size: 0.7rem;
+    background: rgba(var(--bs-secondary-rgb), 0.1);
+    padding: 2px 6px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.subcategory-link:hover small {
+    background: rgba(var(--bs-primary-rgb), 0.15);
+    color: var(--bs-primary) !important;
+}
+
+/* ===== DUGMAD ===== */
+#show-all-categories-btn,
+#hide-all-categories-btn {
+    transition: all 0.3s ease;
+}
+
+#show-all-categories-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(var(--bs-primary-rgb), 0.3);
+}
+
+#hide-all-categories-btn:hover {
+    background-color: var(--bs-danger);
+    border-color: var(--bs-danger);
+    color: white;
+}
+
+/* ===== ANIMACIJA ZA PRIKAZIVANJE ===== */
+#all-categories-section {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== STATISTIKA SEKCION ===== */
+.bg-light.rounded-4 {
+    background: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-radius: 30px !important;
+}
+
+.bg-light.rounded-4 .display-4 {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #764ba2 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+/* ===== POMOĆ SEKCIJA ===== */
+.text-center p-4 {
+    transition: all 0.3s ease;
+    border-radius: 20px;
+}
+
+.text-center p-4:hover {
+    background: rgba(var(--bs-primary-rgb), 0.05);
+    transform: translateY(-3px);
+}
+
+.text-center p-4 i {
+    transition: transform 0.3s ease;
+}
+
+.text-center p-4:hover i {
+    transform: scale(1.1);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+    .category-group-card .card-header h4 {
+        font-size: 1rem;
+    }
+    
+    .subcategory-link {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .categories-hero {
+        border-radius: 0 0 20px 20px;
+    }
+    
+    .categories-hero .display-4 {
+        font-size: 2rem;
+    }
+    
+    .category-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .category-icon i {
+        font-size: 1.75rem !important;
+    }
+    
+    .category-card-inner .card-title {
+        font-size: 0.85rem;
+    }
+    
+    .category-group-card .card-header h4 {
+        font-size: 0.9rem;
+    }
+    
+    .subcategory-link {
+        font-size: 0.7rem;
+    }
+    
+    .bg-light.rounded-4 .display-4 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .categories-hero {
+        padding: 2rem 0 !important;
+    }
+    
+    .categories-hero .lead {
+        font-size: 1rem;
+    }
+    
+    .btn-lg {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .category-group-card .card-body {
+        padding: 1rem;
+    }
+    
+    .subcategory-link {
+        font-size: 0.65rem;
+    }
+    
+    .row.g-4 {
+        --bs-gutter-y: 1rem;
+    }
+}
+
+/* ===== DARK MODE SPECIFIČNOSTI ===== */
+@media (prefers-color-scheme: dark) {
+    .category-card-inner {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    
+    .category-card-inner:hover {
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 20px 35px rgba(0,0,0,0.3);
+    }
+    
+    .category-group-card {
+        background: rgba(255, 255, 255, 0.03);
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+    
+    .category-group-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    .subcategory-link:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.15);
+    }
+    
+    .subcategory-link small {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .bg-light.rounded-4 {
+        background: rgba(255, 255, 255, 0.03) !important;
+    }
+    
+    .text-center p-4:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    
+    #show-all-categories-btn {
+        border-color: rgba(255, 255, 255, 0.2);
+        color: var(--bs-light);
+    }
+    
+    #show-all-categories-btn:hover {
+        background: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+}
+
+/* ===== HOVER EFEKTI ZA KARTICE ===== */
+.category-card,
+.category-group-card {
+    cursor: pointer;
+}
+
+/* ===== PRILAGOĐENJE ZA MANJE EKRANE ===== */
+@media (max-width: 480px) {
+    .row-cols-2.g-2 {
+        --bs-gutter-x: 0.5rem;
+    }
+    
+    .subcategory-link {
+        padding: 0.25rem 0.5rem !important;
+    }
+}
+
+/* Podkategorija linkovi - poboljšani prikaz broja oglasa */
+.subcategory-link {
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    color: var(--bs-body-color);
+    border-radius: 8px;
+}
+
+.subcategory-link:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    transform: translateX(4px);
+    color: var(--bs-primary) !important;
+}
+
+.subcategory-link span {
+    transition: color 0.2s ease;
+}
+
+.subcategory-link:hover span {
+    color: var(--bs-primary);
+}
+
+.subcategory-link i {
+    transition: transform 0.2s ease;
+}
+
+.subcategory-link:hover i {
+    transform: translateX(3px);
+}
+
+/* Badge broj oglasa u podkategoriji */
+.subcategory-link small {
+    font-size: 0.7rem;
+    background: rgba(var(--bs-secondary-rgb), 0.1);
+    padding: 2px 8px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.subcategory-link:hover small {
+    background: rgba(var(--bs-primary-rgb), 0.15);
+    color: var(--bs-primary) !important;
+}
+
+/* Kategorija grupa kartice */
+.category-group-card .badge {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+}

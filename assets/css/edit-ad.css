@@ -1,0 +1,102 @@
+/**
+ * assets/css/edit-ad.css - Stilovi za editovanje oglasa
+ */
+
+/* Stilovi za indikatore koraka (isti kao u create) */
+.form-step-indicator {
+    position: relative;
+    padding: 0 10px;
+}
+
+.form-step-indicator.completed .indicator-circle {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.form-step-indicator .indicator-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #6c757d;
+    font-weight: bold;
+    margin: 0 auto 5px;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+/* Stilovi za postojeće slike */
+.existing-image-card {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.existing-image-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.existing-image-card img {
+    transition: opacity 0.3s ease;
+}
+
+/* Progress bar */
+.progress {
+    overflow: visible;
+}
+
+.progress-bar {
+    position: relative;
+    overflow: visible;
+}
+
+.progress-bar:after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: -4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--bs-primary);
+    border: 2px solid white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-step-indicator .indicator-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+    
+    .existing-image-card {
+        margin-bottom: 10px;
+    }
+}
+
+/* Animacije */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-step {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Button hover efekti */
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Form kontrola fokusa */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}

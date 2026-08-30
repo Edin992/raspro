@@ -1,0 +1,363 @@
+/* profile-instagram.css - Instagram-style profil */
+
+.instagram-profile {
+    max-width: 935px;
+    margin: 0 auto;
+    padding: 30px 20px 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* HEADER */
+.profile-header {
+    display: flex;
+    margin-bottom: 44px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.profile-avatar-container {
+    flex: 0 0 150px;
+    margin-right: 30px;
+    text-align: center;
+}
+
+.profile-avatar-lg {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 2px solid #f0f0f0;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+/* AKCIJE */
+.profile-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.username {
+    font-size: 28px;
+    font-weight: 300;
+    margin-right: 20px;
+}
+
+/* DUGMAD */
+.btn-edit-profile, .btn-new-ad, .btn-message, .btn-follow, .btn-share {
+    padding: 7px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #dbdbdb;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.btn-edit-profile:hover, .btn-new-ad:hover {
+    background: #fafafa;
+}
+
+.btn-message {
+    background: #0095f6;
+    color: white;
+    border-color: #0095f6;
+}
+
+.btn-message:hover {
+    background: #0074cc;
+}
+
+/* FOLLOW DUGME */
+.btn-follow {
+    background: #0095f6;
+    color: white;
+    border-color: #0095f6;
+}
+
+.btn-follow.following {
+    background: transparent;
+    color: #262626;
+    border-color: #dbdbdb;
+}
+
+.btn-follow:hover:not(.following) {
+    background: #0074cc;
+}
+
+.btn-follow:hover.following {
+    background: #fafafa;
+}
+
+.btn-share {
+    padding: 7px 10px;
+}
+
+/* STATISTIKE */
+.profile-stats {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    cursor: pointer;
+}
+
+.stat-number {
+    display: block;
+    font-weight: 600;
+    font-size: 16px;
+    color: #262626;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #8e8e8e;
+}
+
+/* BIO I DETALJI */
+.profile-details {
+    margin-bottom: 20px;
+}
+
+.full-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-size: 16px;
+}
+
+.bio {
+    margin-bottom: 10px;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.location {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+.location i {
+    margin-right: 5px;
+}
+
+/* KONTAKT */
+.contact-info {
+    background: #fafafa;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #dbdbdb;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.contact-item:last-child {
+    margin-bottom: 0;
+}
+
+.contact-item i {
+    width: 20px;
+    margin-right: 10px;
+    color: #8e8e8e;
+}
+
+/* GRID OGLASA */
+.ads-grid-container {
+    margin-top: 30px;
+}
+
+.ads-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+
+.ad-card {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 3px;
+    background: #fafafa;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.ad-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.ad-card:hover .ad-image {
+    transform: scale(1.05);
+}
+
+/* OVERLAY */
+.ad-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.3);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.ad-card:hover .ad-overlay {
+    opacity: 1;
+}
+
+.ad-price {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.ad-views {
+    font-size: 14px;
+    background: rgba(0,0,0,0.5);
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.ad-views i {
+    margin-right: 3px;
+}
+
+/* PREMIUM BADGE */
+.premium-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #000;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.premium-badge i {
+    margin-right: 3px;
+}
+
+/* BEZ OGLASA */
+.no-ads {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.no-ads i {
+    font-size: 48px;
+    color: #dbdbdb;
+    margin-bottom: 20px;
+}
+
+.no-ads h4 {
+    margin-bottom: 15px;
+    color: #8e8e8e;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .instagram-profile {
+        padding: 0;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .profile-avatar-container {
+        flex: none;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+    
+    .profile-avatar-lg {
+        width: 77px;
+        height: 77px;
+    }
+    
+    .username {
+        font-size: 22px;
+        margin-right: 10px;
+    }
+    
+    .profile-actions {
+        justify-content: center;
+    }
+    
+    .profile-stats {
+        justify-content: space-around;
+        gap: 20px;
+    }
+    
+    .ads-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2px;
+    }
+    
+    .ad-overlay {
+        opacity: 1;
+        background: linear-gradient(transparent 50%, rgba(0,0,0,0.7));
+        justify-content: flex-end;
+        padding: 10px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .ads-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+/* ANIMACIJE */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.ad-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* LOADING STATE */
+.btn-follow.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.btn-follow.loading i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

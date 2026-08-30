@@ -1,0 +1,537 @@
+/* public/css/faq.css - FAQ Stranica sa Primarnim Bojama */
+
+/* ===== HERO SEKCIJA ===== */
+.faq-hero {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #0d6efd 100%);
+    border-radius: 0 0 20px 20px;
+    margin-top: -1rem;
+    color: #ffffff;
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.faq-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" opacity="0.1"><path d="M0,0 L100,0 L100,100 Z" fill="white"/></svg>');
+    background-size: cover;
+    pointer-events: none;
+}
+
+.faq-hero h1 {
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.faq-hero .lead {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.faq-hero-icon i {
+    color: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    animation: faqFloat 3s infinite ease-in-out;
+}
+
+@keyframes faqFloat {
+    0%, 100% { 
+        transform: translateY(0) scale(1) rotate(0deg); 
+    }
+    50% { 
+        transform: translateY(-15px) scale(1.05) rotate(5deg); 
+    }
+}
+
+/* ===== PRETRAGA ===== */
+.faq-search-container {
+    max-width: 700px;
+    position: relative;
+}
+
+.faq-search-container .input-group {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.faq-search-container .input-group-text {
+    background-color: white;
+    border: none;
+    padding-left: 1.5rem;
+}
+
+.faq-search-container .input-group-text i {
+    color: var(--bs-primary);
+    font-size: 1.2rem;
+}
+
+.faq-search-container input {
+    border: none !important;
+    border-left: none !important;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    background-color: white;
+}
+
+.faq-search-container input:focus {
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.faq-search-container .btn-outline-light {
+    border: none;
+    background-color: white;
+    color: var(--bs-primary);
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.faq-search-container .btn-outline-light:hover {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.search-suggestions a {
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: underline;
+    transition: all 0.2s ease;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.search-suggestions a:hover {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+}
+
+/* ===== STATISTIKE U HERO-U ===== */
+.faq-stat {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.faq-stat:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.faq-stat i {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== SIDEBAR KATEGORIJE ===== */
+.faq-category-nav .nav-link {
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+    padding: 1rem 1.25rem;
+    color: var(--bs-dark);
+}
+
+.faq-category-nav .nav-link:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    border-left-color: rgba(var(--bs-primary-rgb), 0.5);
+    transform: translateX(8px);
+    color: var(--bs-primary);
+}
+
+.faq-category-nav .nav-link.active {
+    background-color: rgba(var(--bs-primary-rgb), 0.12);
+    border-left-color: var(--bs-primary);
+    transform: translateX(8px);
+    color: var(--bs-primary);
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.faq-category-icon {
+    width: 44px;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    background: rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 12px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.faq-category-nav .nav-link:hover .faq-category-icon {
+    background: rgba(var(--bs-primary-rgb), 0.2);
+    transform: scale(1.1);
+}
+
+.faq-category-nav .nav-link.active .faq-category-icon {
+    background: rgba(var(--bs-primary-rgb), 0.2);
+    transform: scale(1.1);
+}
+
+.faq-category-icon i {
+    font-size: 1.2rem;
+}
+
+/* ===== POPULARNA PITANJA ===== */
+.popular-question-link {
+    transition: all 0.2s ease;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+}
+
+.popular-question-link:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    border-left-color: var(--bs-warning);
+    transform: translateX(5px);
+    text-decoration: none !important;
+}
+
+.popular-question-link .badge {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border-radius: 50%;
+    margin-top: 6px;
+}
+
+.popular-question-link small {
+    color: var(--bs-secondary) !important;
+    transition: color 0.2s ease;
+}
+
+.popular-question-link:hover small {
+    color: var(--bs-dark) !important;
+}
+
+/* ===== FAQ ACCORDION ===== */
+.faq-category-header-icon {
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    text-align: center;
+    background: rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 16px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.faq-category-header-icon:hover {
+    background: rgba(var(--bs-primary-rgb), 0.2);
+    transform: scale(1.05);
+}
+
+.faq-category-header-icon i {
+    font-size: 2rem;
+}
+
+.faq-accordion .accordion-item {
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.15);
+    border-radius: 12px !important;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-accordion .accordion-item:hover {
+    border-color: rgba(var(--bs-primary-rgb), 0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.faq-accordion .accordion-button {
+    border-radius: 12px !important;
+    font-weight: 600;
+    padding: 1.5rem 1.75rem;
+    background-color: rgba(var(--bs-primary-rgb), 0.04);
+    transition: all 0.3s ease;
+    color: var(--bs-dark);
+    font-size: 1.05rem;
+}
+
+.faq-accordion .accordion-button:not(.collapsed) {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+    box-shadow: 0 4px 15px rgba(var(--bs-primary-rgb), 0.1);
+    color: var(--bs-primary);
+}
+
+.faq-accordion .accordion-button::after {
+    background-size: 1.2rem;
+    background-color: var(--bs-primary);
+    border-radius: 50%;
+    padding: 5px;
+    width: 30px;
+    height: 30px;
+    background-position: center;
+}
+
+.faq-accordion .accordion-button:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.08);
+    transform: translateY(-2px);
+}
+
+.faq-accordion .popular-question {
+    border-left: 4px solid var(--bs-warning);
+    background: linear-gradient(to right, rgba(255, 193, 7, 0.05), transparent);
+}
+
+.faq-accordion .popular-question .accordion-button {
+    background-color: rgba(255, 193, 7, 0.05);
+}
+
+.faq-accordion .accordion-body {
+    padding: 1.75rem;
+    background-color: rgba(var(--bs-primary-rgb), 0.02);
+    line-height: 1.8;
+}
+
+.faq-answer {
+    color: var(--bs-secondary);
+    font-size: 1rem;
+}
+
+/* ===== AKCIJE ZA ODPOVOR ===== */
+.faq-answer-actions {
+    font-size: 0.9rem;
+    background: rgba(var(--bs-primary-rgb), 0.03);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1.5rem;
+}
+
+.faq-helpful-btn {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.faq-helpful-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.faq-helpful-btn:hover .faq-helpful-count {
+    transform: scale(1.3);
+}
+
+.faq-helpful-count {
+    display: inline-block;
+    margin-left: 6px;
+    font-weight: 600;
+    transition: transform 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+}
+
+/* ===== DUGMAD ZA PROŠIRI/SKUPI ===== */
+.expand-all-category,
+.collapse-all-category {
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.expand-all-category:hover,
+.collapse-all-category:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== KARTICA REZULTATA PRETRAGE ===== */
+#searchResults {
+    border: 2px solid rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(var(--bs-primary-rgb), 0.1);
+}
+
+#searchResults .card-title i {
+    color: var(--bs-primary);
+}
+
+#clearResults:hover {
+    border-color: var(--bs-primary);
+    color: var(--bs-primary);
+}
+
+.search-result-item {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    padding: 1.25rem;
+}
+
+.search-result-item:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
+    transform: translateX(8px);
+    border-color: var(--bs-primary);
+    box-shadow: 0 5px 15px rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.search-result-link {
+    color: var(--bs-dark);
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.search-result-link:hover {
+    color: var(--bs-primary) !important;
+    text-decoration: underline !important;
+}
+
+.view-answer-btn {
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.view-answer-btn:hover {
+    background-color: var(--bs-primary) !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--bs-primary-rgb), 0.2);
+}
+
+/* ===== SEKCIJA ZA POMOĆ ===== */
+.faq-help-icon i {
+    color: var(--bs-primary);
+    opacity: 0.7;
+}
+
+.card .btn-primary {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #0d6efd 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.card .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(var(--bs-primary-rgb), 0.3);
+}
+
+.card .btn-outline-primary:hover {
+    background-color: var(--bs-primary);
+    color: white;
+}
+
+.card .btn-outline-success:hover {
+    background-color: var(--bs-success);
+    color: white;
+}
+
+/* ===== STATISTIKE NA DNU ===== */
+.faq-stat-large {
+    padding: 2.5rem;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 10px 30px rgba(var(--bs-primary-rgb), 0.1);
+    transition: all 0.4s ease;
+    border: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+    text-align: center;
+}
+
+.faq-stat-large:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(var(--bs-primary-rgb), 0.15);
+    border-color: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.faq-stat-large i {
+    color: var(--bs-primary);
+    margin-bottom: 1.5rem;
+    transition: transform 0.4s ease;
+}
+
+.faq-stat-large:hover i {
+    transform: scale(1.2) rotate(5deg);
+}
+
+.faq-stat-large h3 {
+    color: var(--bs-primary);
+    font-weight: 800;
+    margin: 1rem 0;
+}
+
+.faq-stat-large p {
+    color: var(--bs-secondary);
+    font-size: 1rem;
+}
+
+/* ===== ANIMACIJE ZA HIGHLIGHT ===== */
+@keyframes highlightPulse {
+    0%, 100% { 
+        background-color: rgba(var(--bs-warning-rgb), 0.1); 
+        border-left-color: var(--bs-warning);
+    }
+    50% { 
+        background-color: rgba(var(--bs-warning-rgb), 0.2); 
+        box-shadow: 0 0 20px rgba(var(--bs-warning-rgb), 0.3);
+    }
+}
+
+.highlight-answer {
+    animation: highlightPulse 2s ease;
+    background-color: rgba(var(--bs-warning-rgb), 0.1) !important;
+    border-left: 4px solid var(--bs-warning) !important;
+}
+
+/* ===== RESPONSIVE PRILAGODBA ===== */
+@media (max-width: 768px) {
+    .faq-hero {
+        padding: 3rem 0;
+        border-radius: 0 0 15px 15px;
+    }
+    
+    .faq-hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .faq-hero .lead {
+        font-size: 1.1rem;
+    }
+    
+    .faq-category-header-icon {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+    }
+    
+    .faq-category-header-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .faq-accordion .accordion-button {
+        padding: 1.25rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .faq-stat-large {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+}

@@ -1,0 +1,298 @@
+/* assets/css/dashboard.css - Dashboard Styles */
+
+/* ===== DOBRODOŠLICA KARTICA ===== */
+.card.bg-primary {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #0b5ed7 100%) !important;
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(var(--bs-primary-rgb), 0.3);
+    position: relative;
+}
+
+.card.bg-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none" opacity="0.1"><circle cx="90" cy="10" r="30" fill="white"/><circle cx="10" cy="90" r="40" fill="white"/></svg>');
+    pointer-events: none;
+}
+
+.card.bg-primary .btn-light {
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    color: var(--bs-primary);
+    transition: all 0.3s ease;
+}
+
+.card.bg-primary .btn-light:hover {
+    background: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+}
+
+.card.bg-primary .badge.bg-light {
+    background: rgba(255, 255, 255, 0.95) !important;
+    color: var(--bs-primary) !important;
+    font-weight: 600;
+    padding: 0.35em 0.8em;
+    border-radius: 20px;
+}
+
+/* ===== STATISTIČKE KARTICE ===== */
+.dashboard-stat-card {
+    border: none;
+    border-radius: 14px;
+    transition: all 0.4s ease;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    height: 100%;
+}
+
+.dashboard-stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-stat-card .card-body {
+    padding: 1.75rem 1.5rem;
+}
+
+.dashboard-stat-card .card-footer {
+    background: rgba(var(--bs-primary-rgb), 0.03);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 0.75rem 1.5rem;
+}
+
+.dashboard-stat-card i {
+    transition: transform 0.5s ease;
+}
+
+.dashboard-stat-card:hover i {
+    transform: scale(1.2) rotate(10deg);
+}
+
+/* Boje ikona */
+.dashboard-stat-card .text-primary { color: var(--bs-primary) !important; }
+.dashboard-stat-card .text-success { color: var(--bs-success) !important; }
+.dashboard-stat-card .text-warning { color: var(--bs-warning) !important; }
+.dashboard-stat-card .text-info { color: var(--bs-info) !important; }
+
+.dashboard-stat-card h3 {
+    font-weight: 800;
+    margin: 1rem 0 0.5rem;
+    color: var(--bs-dark);
+}
+
+.dashboard-stat-card p.text-muted {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+.dashboard-stat-card .card-footer a {
+    color: var(--bs-primary);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.dashboard-stat-card .card-footer a:hover {
+    color: var(--bs-primary-dark);
+    padding-left: 5px;
+}
+
+/* ===== BRZE AKCIJE ===== */
+.card .btn-lg {
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.card .btn-outline-primary,
+.card .btn-outline-secondary,
+.card .btn-outline-warning {
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    border-width: 2px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.card .btn-outline-primary:hover {
+    background: var(--bs-primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.card .btn-outline-secondary:hover {
+    background: var(--bs-secondary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.card .btn-outline-warning:hover {
+    background: var(--bs-warning);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.badge.bg-danger {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ===== LISTA OGLASA ===== */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 1.25rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.list-group-item:hover {
+    background: rgba(var(--bs-primary-rgb), 0.04);
+    transform: translateX(5px);
+    border-left: 4px solid var(--bs-primary);
+}
+
+.list-group-item img,
+.list-group-item .rounded {
+    transition: transform 0.3s ease;
+}
+
+.list-group-item:hover img,
+.list-group-item:hover .rounded {
+    transform: scale(1.05);
+}
+
+.list-group-item h6 {
+    color: var(--bs-dark);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.list-group-item .text-success {
+    font-size: 1.1rem;
+    color: var(--bs-success) !important;
+}
+
+/* ===== PREPORUKE ===== */
+.card.border-warning {
+    border: 2px solid var(--bs-warning);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.card.bg-warning {
+    background: linear-gradient(135deg, var(--bs-warning) 0%, #ffca2c 100%) !important;
+    border: none;
+    color: #212529;
+}
+
+.card.bg-warning h5 {
+    color: #212529;
+    font-weight: 700;
+}
+
+.d-flex .fa-2x {
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 12px;
+    background: rgba(var(--bs-primary-rgb), 0.1);
+    transition: all 0.3s ease;
+}
+
+.d-flex:hover .fa-2x {
+    background: rgba(var(--bs-primary-rgb), 0.2);
+    transform: scale(1.1);
+}
+
+.d-flex .text-success,
+.d-flex .text-warning {
+    background: rgba(var(--bs-success-rgb), 0.1) !important;
+}
+
+.d-flex:hover .text-success {
+    background: rgba(var(--bs-success-rgb), 0.2) !important;
+}
+
+.d-flex:hover .text-warning {
+    background: rgba(var(--bs-warning-rgb), 0.2) !important;
+}
+
+.alert.alert-info {
+    border: none;
+    border-radius: 12px;
+    background: rgba(var(--bs-info-rgb), 0.1);
+    border-left: 4px solid var(--bs-info);
+}
+
+.alert.alert-info .fa-star {
+    color: var(--bs-warning);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .container.py-4 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+    
+    .card.bg-primary .d-flex {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .card.bg-primary .text-end {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+    
+    .dashboard-stat-card {
+        margin-bottom: 1rem;
+    }
+    
+    .list-group-item {
+        padding: 1rem;
+    }
+}
+
+/* ===== ANIMACIJE ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Staggered animations for cards */
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
