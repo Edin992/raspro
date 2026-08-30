@@ -1,0 +1,200 @@
+# Omogući mod_rewrite
+RewriteEngine On
+RewriteBase /
+
+# ============================================
+# SITEMAP RUTE - MORAJU BITI NA SAMOM VRHU!
+# ============================================
+
+# Prvo proveri da li je zahtev za sitemap fajlove
+RewriteRule ^sitemap\.xml$ sitemap.php [L,NC]
+RewriteRule ^sitemap\.php$ - [L,NC]
+RewriteRule ^sitemap-view\.php$ - [L,NC]
+RewriteRule ^sitemap-view$ sitemap-view.php [L,NC]
+
+# ============================================
+# API RUTE - DIREKTAN PRISTUP
+# ============================================
+
+# Dozvoli direktan pristup svim API fajlovima
+RewriteRule ^api/ - [L,NC]
+RewriteRule ^api\.php$ - [L,NC]
+
+# ============================================
+# 0. CORS FIX za favicon
+# ============================================
+<IfModule mod_headers.c>
+    <FilesMatch "favicon-.*\.(png|ico|svg|jpg|jpeg)$">
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Methods "GET, OPTIONS"
+    </FilesMatch>
+    
+    <FilesMatch "sitemap\.(xml|php)$">
+        Header set Content-Type "application/xml; charset=utf-8"
+    </FilesMatch>
+</IfModule>
+
+# ============================================
+# 1. DOZVOLI DIREKTAN PRISTUP FAJLOVIMA
+# ============================================
+
+# Ako fajl postoji, serviraj ga direktno
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Ako direktorijum postoji, serviraj ga
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ============================================
+# 2. SEO RUTE ZA SLUGOVE (BEZ ID BROJEVA)
+# ============================================
+# ============================================
+# EDIT OGLASA PREKO SLUG-A
+# ============================================
+
+# Novi SEO URL za edit: /edit-ad/nova-ponuda-123
+RewriteRule ^edit/([a-zA-Z0-9_-]+)/?$ index.php?page=edit-ad&slug=$1 [QSA,L,NC]
+
+# Stari URL (backward compatibility)
+RewriteRule ^edit/([0-9]+)/?$ index.php?page=edit-ad&id=$1 [QSA,L]
+
+# Ruta za kategoriju sa slug-om: /ads/category/auto
+RewriteRule ^ads/category/([a-zA-Z0-9_-]+)/?$ index.php?page=ads&category_slug=$1 [QSA,L,NC]
+
+# Ruta za podkategoriju sa slug-ovima: /ads/category/auto/limuzine
+RewriteRule ^ads/category/([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ index.php?page=ads&category_slug=$1&subcategory_slug=$2 [QSA,L,NC]
+
+# Ruta za oglas sa slug-om (bez ID): /ad/nova-ponuda-123
+RewriteRule ^ad/([a-zA-Z0-9_-]+)/?$ index.php?page=ad-detail&ad_slug=$1 [QSA,L,NC]
+
+# Ruta za pretragu po lokaciji
+RewriteRule ^ads/location/([^/]+)/?$ index.php?page=ads&location=$1 [QSA,L,NC]
+
+# Ruta za pretragu po ključnoj reči
+RewriteRule ^ads/search/([^/]+)/?$ index.php?page=ads&search=$1 [QSA,L,NC]
+
+# ============================================
+# 3. BACKWARD COMPATIBILITY (STARI URL-OVI SA ID)
+# ============================================
+
+# Stari URL za kategoriju sa ID: /ads/category/1
+RewriteRule ^ads/category/([0-9]+)/?$ index.php?page=ads&category=$1 [QSA,L]
+
+# Stari URL za podkategoriju sa ID: /ads/category/1/4
+RewriteRule ^ads/category/([0-9]+)/([0-9]+)/?$ index.php?page=ads&category=$1&subcategory=$2 [QSA,L]
+
+# Stari URL za oglas sa ID: /ad/123 ili /ad/123/nova-ponuda
+RewriteRule ^ad/([0-9]+)/?$ index.php?page=ad-detail&id=$1 [QSA,L]
+RewriteRule ^ad/([0-9]+)/([^/]+)/?$ index.php?page=ad-detail&id=$1 [QSA,L]
+
+# ============================================
+# 4. EXTERNAL REDIRECT (PREUSMERAVANJE STARIH URL-OVA NA NOVE)
+# ============================================
+
+# Preusmeri stare URL-ove sa ID na nove SEO URL-ove (301 trajno)
+# Ovo će Google-u reći da koristi nove URL-ove
+
+# Stari oglas sa ID i slug -> novi sa samo slug
+RewriteCond %{THE_REQUEST} \s/+(?:index\.php)?\?page=ad-detail&id=([0-9]+)(?:&slug=([^\s&]+))?\s [NC]
+RewriteRule ^ /ad/%2? [R=301,L,NE]
+
+# Stari URL sa ID kategorije
+RewriteCond %{THE_REQUEST} \s/+(?:index\.php)?\?page=ads&category=([0-9]+)(?:&subcategory=([0-9]+))?\s [NC]
+RewriteRule ^ /ads/category/%1%{QUERY_STRING}? [R=301,L,NE]
+
+# Stari URL sa parametrima
+RewriteCond %{THE_REQUEST} \s/+(?:index\.php)?\?page=ads&location=([^\s&]+)\s [NC]
+RewriteRule ^ /ads/location/%1? [R=301,L,NE]
+
+RewriteCond %{THE_REQUEST} \s/+(?:index\.php)?\?page=ads&search=([^\s&]+)\s [NC]
+RewriteRule ^ /ads/search/%1? [R=301,L,NE]
+
+# OSNOVNE STRANICE
+RewriteCond %{THE_REQUEST} \s/+(?:index\.php)?\?page=([a-zA-Z0-9_-]+)\s [NC]
+RewriteRule ^ /%1? [R=301,L]
+
+# ============================================
+# 5. INTERNI REWRITING (standardne rute)
+# ============================================
+
+# Glavna stranica
+RewriteRule ^$ index.php?page=home [QSA,L]
+RewriteRule ^home/?$ index.php?page=home [QSA,L]
+
+# OGLASI (standardne rute)
+RewriteRule ^ads/?$ index.php?page=ads [QSA,L]
+RewriteRule ^ads/premium/?$ index.php?page=ads&premium=1 [QSA,L,NC]
+RewriteRule ^ads/my/([^/]+)/?$ index.php?page=ads&my=$1 [QSA,L]
+RewriteRule ^ads/page/([0-9]+)/?$ index.php?page=ads&page=$1 [QSA,L]
+
+# KREIRANJE/IZMENA
+RewriteRule ^create-ad/?$ index.php?page=create-ad [QSA,L]
+
+
+# KORISNIČKI DEO
+RewriteRule ^login/?$ index.php?page=login [QSA,L]
+RewriteRule ^logout/?$ index.php?page=logout [QSA,L]
+RewriteRule ^register/?$ index.php?page=register [QSA,L]
+RewriteRule ^profile/?$ index.php?page=profile [QSA,L]
+RewriteRule ^profile/([0-9]+)/?$ index.php?page=profile&id=$1 [QSA,L]
+RewriteRule ^dashboard/?$ index.php?page=dashboard [QSA,L]
+RewriteRule ^messages/?$ index.php?page=messages [QSA,L]
+
+# VERIFIKACIJA
+RewriteRule ^verify-email/?$ index.php?page=verify-email [QSA,L]
+RewriteRule ^verify-email/([^/]+)/?$ index.php?page=verify-email&token=$1 [QSA,L]
+RewriteRule ^forgot-password/?$ index.php?page=forgot-password [QSA,L]
+RewriteRule ^reset-password/([^/]+)/?$ index.php?page=reset-password&token=$1 [QSA,L]
+
+# INFORMACIJE
+RewriteRule ^how-it-works/?$ index.php?page=how-it-works [QSA,L]
+RewriteRule ^contact/?$ index.php?page=contact [QSA,L]
+RewriteRule ^about/?$ index.php?page=about [QSA,L]
+RewriteRule ^faq/?$ index.php?page=faq [QSA,L]
+RewriteRule ^safety/?$ index.php?page=safety [QSA,L]
+
+# PRAVNO
+RewriteRule ^terms/?$ index.php?page=terms [QSA,L]
+RewriteRule ^privacy/?$ index.php?page=privacy [QSA,L]
+RewriteRule ^cookies/?$ index.php?page=cookies [QSA,L]
+
+# KATEGORIJE
+RewriteRule ^categories/?$ index.php?page=categories [QSA,L]
+RewriteRule ^packages/?$ index.php?page=packages [QSA,L]
+RewriteRule ^premium-ads/?$ index.php?page=premium-ads [QSA,L]
+
+# ============================================
+# ADMIN PANEL - POTPUNO ODVOJEN
+# ============================================
+
+# Ako je zahtev za /admin/ folder, pusti direktan pristup
+RewriteRule ^admin($|/) - [L,NC]
+
+# GREŠKE
+RewriteRule ^404/?$ index.php?page=404 [QSA,L]
+RewriteRule ^403/?$ index.php?page=403 [QSA,L]
+RewriteRule ^500/?$ index.php?page=500 [QSA,L]
+
+# Robots.txt preko PHP
+RewriteRule ^robots\.txt$ robots.php [L,NC]
+
+# ============================================
+# 6. CATCH-ALL ZA SVE OSTALE STRANICE
+# ============================================
+
+# Ovo će presresti sve ostale SEO linkove i pokušati da ih mapira
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ index.php?page=$1 [QSA,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)/([a-zA-Z0-9_-]+)/?$ index.php?page=$1&param=$2 [QSA,L]
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php83” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php83 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
