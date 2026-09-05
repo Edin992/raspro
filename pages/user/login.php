@@ -5,7 +5,7 @@
 
 // Ako je korisnik već ulogovan, preusmeri
 if (isLoggedIn()) {
-    redirect('?page=dashboard');
+    redirect('/profile');
 }
 
 // Postavi title
