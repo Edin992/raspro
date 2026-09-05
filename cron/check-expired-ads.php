@@ -27,6 +27,19 @@ if (!$isCLI) {
     }
 }
 
+// ============================================
+// ODRZAVANJE (dodato 2026-09): ciscenje isteklih "zapamti me" tokena
+// i starih PROCITANIH notifikacija (starije od 90 dana)
+// ============================================
+try {
+    $dbCleanup = getDatabaseConnection();
+    $n1 = $dbCleanup->exec("DELETE FROM remember_tokens WHERE expires_at < NOW()");
+    $n2 = $dbCleanup->exec("DELETE FROM notifications WHERE is_read = 1 AND created_at < DATE_SUB(NOW(), INTERVAL 90 DAY)");
+    error_log("Cron cleanup: remember_tokens=" . $n1 . ", old_notifications=" . $n2);
+} catch (Throwable $e) {
+    error_log("Cron cleanup greska: " . $e->getMessage());
+}
+
 // Log funkcija
 function cronLog($message) {
     $timestamp = date('Y-m-d H:i:s');

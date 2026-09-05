@@ -3,15 +3,13 @@
  * api/user/request-reset.php - Zahtev za resetovanje lozinke
  */
 
-// OBAVEZNO na početku
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// NAPOMENKA: rucni session_start() je uklonjen; constants.php
+// (preko database.php) pokrece sesiju sa HttpOnly/SameSite kolacicima.
 
 // CORS headers
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: ' . ($_SERVER['HTTP_ORIGIN'] ?? '*'));
-header('Access-Control-Allow-Credentials: true');
+// FIX: 'echo bilo kog Origin + credentials' je opasno; endpoint je
+// same-origin, pa CORS zaglavlja nisu potrebna.
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 
@@ -39,6 +37,20 @@ if (!empty($_POST)) {
     if (!empty($json)) {
         $input = json_decode($json, true);
     }
+}
+
+// ============================================
+// ANTI-BOT: reCAPTCHA v3 (action 'reset_password')
+// ============================================
+$recaptcha = recaptcha_check_submission($input, 'reset_password');
+if (!$recaptcha['success']) {
+    http_response_code(422);
+    echo json_encode([
+        'success' => false,
+        'message' => $recaptcha['message'] ?: 'reCAPTCHA provera nije uspela.',
+        'recaptcha_failed' => true
+    ]);
+    exit();
 }
 
 // VALIDACIJA EMAILA
@@ -169,7 +181,6 @@ try {
         'success' => true,
         'message' => 'Ako email postoji u našem sistemu, poslaćemo Vam reset link.',
         'email_sent' => $emailSent,
-        'email' => $email, // DEBUG - ukloni u produkciji
         'rate_info' => [
             'attempts' => $user['reset_attempts'] + 1,
             'max_attempts' => 3

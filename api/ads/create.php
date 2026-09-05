@@ -6,7 +6,8 @@
 session_start();
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/functions.php';
-require_once __DIR__ . '/../../includes/packages.php';
+require_once __DIR__ . '/../../includes/packages.php';
+require_once __DIR__ . '/../../includes/auth.php'; // checkCSRFToken
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -29,6 +30,13 @@ if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
+
+// FIX: CSRF zastita (forma vec sadrzi csrf_token skriveno polje)
+if (!checkCSRFToken($_POST)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Sesija je istekla. Osvežite stranicu i pokušajte ponovo.']);
+    exit();
+}
 
 // DOHVATI GRAD IZ BAZE (umesto iz POST-a)
 $db = getDatabaseConnection();

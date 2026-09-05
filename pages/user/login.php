@@ -17,6 +17,8 @@ $pageSpecificJS = ['login.js']; // ✅ DODAJEMO NOVI JS FAJL
 
 ?>
 
+<?php echo recaptcha_render_scripts(); ?>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
@@ -32,6 +34,8 @@ $pageSpecificJS = ['login.js']; // ✅ DODAJEMO NOVI JS FAJL
                 <div class="card-body p-4 p-md-5">
                     <!-- FORMA ZA PRIJAVU -->
                     <form id="login-form" novalidate>
+                        <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+                        <input type="hidden" name="recaptcha_token" id="recaptcha-token">
                         <div id="login-error"></div>
                         <div style="display:none !important; height:0 !important; width:0 !important; overflow:hidden !important; opacity:0 !important; position:absolute !important; left:-9999px !important;">
                                 <label for="ime">Ime</label>
@@ -85,6 +89,13 @@ $pageSpecificJS = ['login.js']; // ✅ DODAJEMO NOVI JS FAJL
                                 <i class="fas fa-sign-in-alt me-2"></i> Prijavi se
                             </button>
                         </div>
+                        <?php if (recaptcha_is_enabled()): ?>
+                        <p class="text-center small text-muted mb-3">
+                            Zaštićeno reCAPTCHA tehnologijom — primenjuju se
+                            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Politika privatnosti</a>
+                            i <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Uslovi korišćenja</a>.
+                        </p>
+                        <?php endif; ?>
                         
                         <!-- REGISTRACIJA LINK -->
                         <div class="text-center">

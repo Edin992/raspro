@@ -30,130 +30,10 @@ $currentPage = 'cookies';
     </div>
 </section>
 
-<!-- COOKIES CONSENT BANNER (AKO NIJE PRIHVATIO) -->
-<div id="cookiesConsentBanner" class="fixed-bottom p-3 bg-dark text-white d-none">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <p class="mb-0">
-                    <i class="fas fa-cookie-bite me-2"></i>
-                    Koristimo kolačiće za poboljšanje vašeg iskustva. 
-                    Nastavkom korišćenja prihvatate našu Politiku kolačića.
-                    <a href="/cookies" class="text-warning text-decoration-none ms-1">Saznaj više</a>
-                </p>
-            </div>
-            <div class="col-lg-4 text-lg-end mt-2 mt-lg-0">
-                <button class="btn btn-outline-light btn-sm" id="rejectCookies">
-                    Odbij neophodne
-                </button>
-                <button class="btn btn-primary btn-sm ms-2" id="acceptAllCookies">
-                    Prihvatam sve
-                </button>
-                <button class="btn btn-success btn-sm ms-2" id="manageCookies">
-                    Prilagodi
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- GLOBALNI COOKIE CONSENT: banner + modal se nalaze u layout/cookie-consent.php
+         (pojavljuju se na SVIM stranica, pa i ovde). Dugmad ispod otvaraju globalni modal. -->
 
-<!-- COOKIES SETTINGS MODAL -->
-<div class="modal fade" id="cookiesSettingsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-sliders-h me-2"></i> Podešavanje kolačića
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-muted">
-                    Izaberite koje vrste kolačića želite da prihvatite. 
-                    Neophodni kolačići su uvek aktivni jer su potrebni za osnovno funkcionisanje sajta.
-                </p>
-                
-                <div class="cookies-category mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <h6 class="mb-0">
-                                <span class="badge bg-primary me-2">Neophodni</span>
-                                Uvek aktivni
-                            </h6>
-                            <small class="text-muted">Session, sigurnosni, autentifikacioni kolačići</small>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" checked disabled>
-                        </div>
-                    </div>
-                    <p class="small mb-0">
-                        Ovi kolačići su neophodni za funkcionisanje sajta. Bez njih ne možete da se prijavite 
-                        ili koristite osnovne funkcionalnosti.
-                    </p>
-                </div>
-                
-                <div class="cookies-category mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <h6 class="mb-0">
-                                <span class="badge bg-success me-2">Funkcionalni</span>
-                            </h6>
-                            <small class="text-muted">Jezičke postavke, tema, preferencije</small>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="functionalCookies" checked>
-                        </div>
-                    </div>
-                    <p class="small mb-0">
-                                Omogućavaju da sajt zapamti vaše izbore (kao što su jezik, region ili temu) 
-                        i pružaju poboljšane, ličnije funkcije.
-                    </p>
-                </div>
-                
-                <div class="cookies-category mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <h6 class="mb-0">
-                                <span class="badge bg-info me-2">Analitički</span>
-                            </h6>
-                            <small class="text-muted">Google Analytics, statistika poseta</small>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="analyticsCookies">
-                        </div>
-                    </div>
-                    <p class="small mb-0">
-                        Omogućavaju nam da razumemo kako posetioci koriste naš sajt. 
-                        Ovi podaci su anonimni i pomažu nam da poboljšamo funkcionalnost.
-                    </p>
-                </div>
-                
-                <div class="cookies-category">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <h6 class="mb-0">
-                                <span class="badge bg-warning me-2">Marketinški</span>
-                            </h6>
-                            <small class="text-muted">Reklamne mreže, targetiranje</small>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="marketingCookies">
-                        </div>
-                    </div>
-                    <p class="small mb-0">
-                                Koriste se za praćenje posetilaca na različitim sajtovima. Cilj je prikazati 
-                        relevantne oglase za pojedinačnog korisnika.
-                    </p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
-                <button type="button" class="btn btn-primary" id="saveCookiesSettings">Sačuvaj izbore</button>
-            </div>
-        </div>
-    </div>
-</div>
-
+        
 <!-- MAIN CONTENT -->
 <section class="mb-5">
     <div class="container">
@@ -937,80 +817,23 @@ $currentPage = 'cookies';
 
 
 <script>
+    // FIX: banner/modal su sada GLOBALNI (layout/cookie-consent.php + assets/js/cookies.js),
+    // a izbor se pored localStorage upisuje i u SQL tabelu cookie_consents.
     document.addEventListener('DOMContentLoaded', function() {
-        const banner = document.getElementById('cookiesConsentBanner');
-        const modalElement = document.getElementById('cookiesSettingsModal');
-        const modal = new bootstrap.Modal(modalElement);
-        
-        // Proveri da li je već prihvatio kolačiće
-        const cookiesAccepted = localStorage.getItem('cookiesAccepted');
-        const cookiesSettings = JSON.parse(localStorage.getItem('cookiesSettings') || '{}');
-        
-        // Ako nije prihvatio, pokaži banner
-        if (!cookiesAccepted) {
-            setTimeout(() => {
-                banner.classList.remove('d-none');
-            }, 1000);
-        }
-        
-        // Postavi prethodne postavke ako postoje
-        if (cookiesSettings.functional !== undefined) {
-            document.getElementById('functionalCookies').checked = cookiesSettings.functional;
-        }
-        if (cookiesSettings.analytics !== undefined) {
-            document.getElementById('analyticsCookies').checked = cookiesSettings.analytics;
-        }
-        if (cookiesSettings.marketing !== undefined) {
-            document.getElementById('marketingCookies').checked = cookiesSettings.marketing;
-        }
-        
-        // Event listeners za banner dugmad
-        document.getElementById('acceptAllCookies').addEventListener('click', function() {
-            acceptAllCookies();
+        // Dugmad sa stranice otvaraju globalni modal sa postavkama
+        ['openCookiesSettings', 'openSettingsFromContent', 'finalCookiesSettings'].forEach(function(id) {
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (typeof window.openCookieSettings === 'function') {
+                        window.openCookieSettings();
+                    }
+                });
+            }
         });
         
-        document.getElementById('rejectCookies').addEventListener('click', function() {
-            rejectNonEssentialCookies();
-        });
-        
-        document.getElementById('manageCookies').addEventListener('click', function() {
-            modal.show();
-        });
-        
-        // Event listeners za otvaranje modala
-        document.getElementById('openCookiesSettings').addEventListener('click', function() {
-            modal.show();
-        });
-        
-        document.getElementById('openSettingsFromContent').addEventListener('click', function() {
-            modal.show();
-        });
-        
-        document.getElementById('finalCookiesSettings').addEventListener('click', function() {
-            modal.show();
-        });
-        
-        // ISPRAVLJENO: Event listener za save dugme
-        document.getElementById('saveCookiesSettings').addEventListener('click', function() {
-            // Prvo sačuvaj postavke
-            saveCookieSettings();
-            
-            // Zatvori modal bez fokusa na dugme
-            modal.hide();
-            
-            // Vrati fokus na bezbedno mesto
-            setTimeout(() => {
-                document.querySelector('body').focus();
-            }, 150);
-        });
-        
-        // Dodaj event listener za ESC i klik izvan modala
-        modalElement.addEventListener('hidden.bs.modal', function() {
-            // Kada se modal zatvori, ukloni fokus
-            document.activeElement.blur();
-        });
-        
-        // Smooth scroll za navigaciju
+        // Smooth scroll za navigaciju po sekcijama
         const navLinks = document.querySelectorAll('.cookies-nav .nav-link');
         navLinks.forEach(link => {
             link.addEventListener('click', function(e) {
@@ -1050,120 +873,5 @@ $currentPage = 'cookies';
                 }
             });
         });
-        
-        // Funkcije za upravljanje kolačićima
-        function acceptAllCookies() {
-            const settings = {
-                necessary: true,
-                functional: true,
-                analytics: true,
-                marketing: true,
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem('cookiesAccepted', 'true');
-            localStorage.setItem('cookiesSettings', JSON.stringify(settings));
-            
-            banner.classList.add('d-none');
-            showSuccessMessage('Hvala! Prihvatili ste sve kolačiće.');
-            
-            // Postavi stvarne kolačiće (simulacija)
-            setCookie('functional_cookies', 'accepted', 365);
-            setCookie('analytics_cookies', 'accepted', 365);
-            setCookie('marketing_cookies', 'accepted', 365);
-        }
-        
-        function rejectNonEssentialCookies() {
-            const settings = {
-                necessary: true,
-                functional: false,
-                analytics: false,
-                marketing: false,
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem('cookiesAccepted', 'true');
-            localStorage.setItem('cookiesSettings', JSON.stringify(settings));
-            
-            banner.classList.add('d-none');
-            showSuccessMessage('Prihvatili ste samo neophodne kolačiće.');
-            
-            // Obriši neophodne kolačiće (simulacija)
-            deleteCookie('functional_cookies');
-            deleteCookie('analytics_cookies');
-            deleteCookie('marketing_cookies');
-        }
-        
-        function saveCookieSettings() {
-            const settings = {
-                necessary: true,
-                functional: document.getElementById('functionalCookies').checked,
-                analytics: document.getElementById('analyticsCookies').checked,
-                marketing: document.getElementById('marketingCookies').checked,
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem('cookiesAccepted', 'true');
-            localStorage.setItem('cookiesSettings', JSON.stringify(settings));
-            
-            banner.classList.add('d-none');
-            showSuccessMessage('Podešavanja kolačića su sačuvana.');
-            
-            // Postavi/obriši kolačiće prema postavkama
-            if (settings.functional) {
-                setCookie('functional_cookies', 'accepted', 365);
-            } else {
-                deleteCookie('functional_cookies');
-            }
-            
-            if (settings.analytics) {
-                setCookie('analytics_cookies', 'accepted', 365);
-            } else {
-                deleteCookie('analytics_cookies');
-            }
-            
-            if (settings.marketing) {
-                setCookie('marketing_cookies', 'accepted', 365);
-            } else {
-                deleteCookie('marketing_cookies');
-            }
-        }
-        
-        function setCookie(name, value, days) {
-            const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
-            document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`;
-        }
-        
-        function deleteCookie(name) {
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-        }
-        
-        function showSuccessMessage(message) {
-            // Kreiraj toast notifikaciju
-            const toast = document.createElement('div');
-            toast.className = 'position-fixed bottom-0 end-0 p-3';
-            toast.style.zIndex = '10000';
-            toast.innerHTML = `
-                <div class="toast show" role="alert">
-                    <div class="toast-header bg-success text-white">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <strong class="me-auto">Uspešno</strong>
-                        <button type="button" class="btn-close btn-close-white" 
-                                onclick="this.closest('.toast').remove()"></button>
-                    </div>
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(toast);
-            
-            // Automatski ukloni nakon 5 sekundi
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.remove();
-                }
-            }, 5000);
-        }
     });
 </script>

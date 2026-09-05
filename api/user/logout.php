@@ -11,6 +11,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// FIX: obrisi "zapamti me" token pre unistenja sesije
+if (function_exists('rememberMeClear') && !empty($_SESSION['user_id'])) {
+    rememberMeClear($_SESSION['user_id']);
+}
+
 // Uništi sesiju
 $_SESSION = array();
 

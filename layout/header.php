@@ -82,12 +82,15 @@ $pageDescription = isset($pageDescription) ? $pageDescription :
         <style><?php echo $inlineStyles; ?></style>
     <?php endif; ?>
     
-    <!-- COOKIE CONSENT (primer) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css">
+    <!-- COOKIE CONSENT: bootstrap modal iz layout/cookie-consent.php (nije potreban CDN) -->
     
-    <!-- ANALYTICS (primer) -->
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX-Y"></script>
+    <!-- ANALYTICS - FIX: gtag se vise NE ucitava bez pristanka.
+         ID definisite u config/constants.php (GOOGLE_ANALYTICS_ID),
+         a skripta je dinamicki ubacuje assets/js/cookies.js
+         tek kad korisnik prihvati ANALITICKE kolacice (GDPR/ZZPL). -->
+    <script>
+        window.GOOGLE_ANALYTICS_ID = '<?php echo defined('GOOGLE_ANALYTICS_ID') ? GOOGLE_ANALYTICS_ID : ''; ?>';
+    </script>
     <script>
         window.SITE_CONFIG = {
             url: '<?php echo SITE_URL; ?>',
@@ -99,11 +102,6 @@ $pageDescription = isset($pageDescription) ? $pageDescription :
         };
     </script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-XXXXX-Y');
-    </script>
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- ACCESSIBILITY SKIP LINK -->

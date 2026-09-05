@@ -16,6 +16,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../../config/database.php';
 
+// FIX: rate limit - endpoint se ranije mogao koristiti za beskonacno
+// nabrajanje postojecih korisnickih imena (harvesting za bruteforce)
+if (function_exists('apc_fetch')) {
+    $rlKey = 'raspro_checkusr_rl_' . md5((string)($_SERVER['REMOTE_ADDR'] ?? 'na'));
+    $ok = false;
+    $hits = (int) apc_fetch($rlKey, $ok);
+    if ($ok && $hits >= 30) { // max 30 provera / 10 min po IP-u
+        http_response_code(429);
+        echo json_encode(['success' => false, 'available' => false, 'message' => 'Previše zahteva. Sačekajte malo.']);
+        exit();
+    }
+    if (!@apc_inc($rlKey, 1, $incOk)) { apc_add($rlKey, 1, 600); }
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode([
@@ -35,6 +49,15 @@ if (empty($username)) {
         'success' => false,
         'available' => false,
         'message' => 'Korisničko ime je obavezno'
+    ]);
+    exit();
+}
+
+if (strlen($username) > 30) {
+    echo json_encode([
+        'success' => false,
+        'available' => false,
+        'message' => 'Korisničko ime sme imati najviše 30 karaktera'
     ]);
     exit();
 }

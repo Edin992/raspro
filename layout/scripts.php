@@ -16,8 +16,8 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="<?php echo SITE_URL; ?>/assets/js/jquery.min.js"></script> <!-- Fallback -->
     
-    <!-- COOKIE CONSENT -->
-    <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js"></script>
+    <!-- GLOBALNI COOKIE CONSENT (banner + modal, izbor se cuva u SQL) -->
+<?php include __DIR__ . '/cookie-consent.php'; ?>
     
     <!-- CUSTOM JS FILES -->
     <script src="<?php echo SITE_URL; ?>/assets/js/main.js"></script>
@@ -52,8 +52,7 @@
             // Theme switcher
             initThemeSwitcher();
             
-            // Cookie consent
-            initCookieConsent();
+            // Cookie consent - SAD GA RADI cookies.js (globalni, ceo sajt)
             
             // Inicijalizuj notifikacije ako je korisnik ulogovan
             
@@ -136,64 +135,52 @@
             });
         }
         
-        // Theme switcher
+        // Theme switcher - FIX: jedinstveni handler za obe tipke (desktop dugme
+        // + side meni dugme) koji sinhronizuje html[data-bs-theme] (Bootstrap)
+        // I body.dark-mode (stari CSS sajta). Ranije su navbar.php i ovaj fajl
+        // imali DVA odvojena handlera na istom dugmetu i razilazila se u stanju.
         function initThemeSwitcher() {
             const themeToggle = document.getElementById('theme-toggle');
-            if (!themeToggle) return;
+            const sideToggle = document.getElementById('mobile-theme-toggle-side');
+            if (!themeToggle && !sideToggle) return;
             
-            // Proveri sačuvanu temu
             const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            applyTheme(savedTheme);
             
-            // Ažuriraj ikonu
-            updateThemeIcon(savedTheme);
-            
-            themeToggle.addEventListener('click', function() {
-                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                
-                document.documentElement.setAttribute('data-bs-theme', newTheme);
-                localStorage.setItem('theme', newTheme);
-                
-                updateThemeIcon(newTheme);
+            (themeToggle ? [themeToggle, sideToggle] : [sideToggle]).forEach(btn => {
+                if (btn) btn.addEventListener('click', function() {
+                    const current = document.documentElement.getAttribute('data-bs-theme') || 'light';
+                    const next = current === 'dark' ? 'light' : 'dark';
+                    localStorage.setItem('theme', next);
+                    applyTheme(next);
+                });
             });
             
+            function applyTheme(theme) {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+                document.body.classList.toggle('dark-mode', theme === 'dark');
+                updateThemeIcon(theme);
+            }
+            
             function updateThemeIcon(theme) {
-                const icon = themeToggle.querySelector('i');
-                if (!icon) return;
-                
-                if (theme === 'dark') {
-                    icon.className = 'fas fa-sun';
-                    themeToggle.setAttribute('title', 'Prebaci na svetli režim');
-                } else {
-                    icon.className = 'fas fa-moon';
-                    themeToggle.setAttribute('title', 'Prebaci na tamni režim');
+                if (themeToggle) {
+                    const icon = themeToggle.querySelector('i');
+                    if (icon) {
+                        icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                        themeToggle.setAttribute('title', theme === 'dark' ? 'Prebaci na svetli režim' : 'Prebaci na tamni režim');
+                    }
+                }
+                if (sideToggle) {
+                    const lbl = sideToggle.querySelector('.mobile-theme-label');
+                    const ic = sideToggle.querySelector('i');
+                    if (lbl) lbl.textContent = theme === 'dark' ? 'Svetla tema' : 'Tamna tema';
+                    if (ic) ic.className = theme === 'dark' ? 'fas fa-sun me-3 text-secondary' : 'fas fa-moon me-3 text-secondary';
                 }
             }
         }
         
-        // Cookie consent
-        function initCookieConsent() {
-            if (typeof window.cookieconsent === 'undefined') return;
-            
-            window.cookieconsent.initialise({
-                palette: {
-                    popup: {
-                        background: "#252e39"
-                    },
-                    button: {
-                        background: "#14a7d0"
-                    }
-                },
-                theme: "classic",
-                content: {
-                    message: "Ovaj sajt koristi kolačiće za poboljšanje korisničkog iskustva.",
-                    dismiss: "Razumem",
-                    link: "Saznaj više",
-                    href: "<?php echo SITE_URL; ?>/?page=cookies"
-                }
-            });
-        }
+/* Cookie consent (cookieconsent CDN) je ZAMENJEN globalnim sistemom u
+         layout/cookie-consent.php + assets/js/cookies.js - izbor se cuva i u SQL. */
     </script>
     
 </body>

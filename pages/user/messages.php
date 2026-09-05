@@ -2,12 +2,10 @@
 /**
  * pages/user/messages.php - Sistem za poruke (Modern UI)
  */
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-
 require_once __DIR__ . '/../../includes/messages.php';
 
+// FIX: error_reporting/display_errors uklonjeni - greske idu SAMO u error_log,
+// stranicu posecuju i neprijavljeni posetioci (ne curi putanja/sadrzaj).
 
 // Proveri da li je korisnik ulogovan
 if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
@@ -252,6 +250,11 @@ $inlineScripts = "
                         <button class="btn btn-sm btn-outline-danger" id="deleteChatBtn">
                             <i class="fas fa-trash"></i>
                         </button>
+                        <!-- OCENI KORISNIKA (vidljivo kad su ispunjeni uslovi) -->
+                        <button class="btn btn-sm btn-outline-warning d-none" id="rateUserBtn"
+                                title="Oceni nakon razmene poruka">
+                            <i class="fas fa-star"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -277,6 +280,61 @@ $inlineScripts = "
                         </button>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ MODAL: OCENI KORISNIKA ============ -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-star text-warning me-2"></i> Oceni sagovornika
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Zatvori"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small mb-3">
+                    Ocenite <strong id="reviewTargetName">korisnika</strong> na osnovu međusobne komunikacije.
+                    Vaša ocena biće javno prikazana na njegovom profilu.
+                </p>
+
+                <div class="text-center mb-3">
+                    <div class="star-rating-input" id="reviewStarInput" role="radiogroup" aria-label="Ocena zvezdicama">
+                        <i class="far fa-star" data-value="1" role="radio" aria-checked="false" tabindex="0"></i>
+                        <i class="far fa-star" data-value="2" role="radio" aria-checked="false" tabindex="0"></i>
+                        <i class="far fa-star" data-value="3" role="radio" aria-checked="false" tabindex="0"></i>
+                        <i class="far fa-star" data-value="4" role="radio" aria-checked="false" tabindex="0"></i>
+                        <i class="far fa-star" data-value="5" role="radio" aria-checked="false" tabindex="0"></i>
+                    </div>
+                    <div class="small text-muted mt-1" id="reviewRatingText">Izaberite ocenu</div>
+                </div>
+
+                <form id="reviewForm">
+                    <input type="hidden" name="conversation_id" id="reviewConversationId">
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                    <div class="mb-3">
+                        <label for="reviewTitle" class="form-label">Naslov (opciono)</label>
+                        <input type="text" class="form-control" id="reviewTitle" name="title"
+                               maxlength="100" placeholder="Npr. Sve super, brz dogovor!">
+                    </div>
+                    <div class="mb-2">
+                        <label for="reviewComment" class="form-label">Obrazloženje *</label>
+                        <textarea class="form-control" id="reviewComment" name="comment" rows="3"
+                                  maxlength="1000" required
+                                  placeholder="Kako je protekla saradnja?"></textarea>
+                        <div class="form-text"><span id="reviewCharCount">0</span>/1000</div>
+                    </div>
+                    <div id="reviewError" class="text-danger small mt-2 d-none"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                <button type="submit" form="reviewForm" class="btn btn-warning text-white" id="reviewSubmitBtn">
+                    <i class="fas fa-paper-plane me-2"></i> Pošalji ocenu
+                </button>
             </div>
         </div>
     </div>

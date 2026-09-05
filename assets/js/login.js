@@ -48,16 +48,56 @@ class LoginHandler {
         });
     }
     
+    /**
+     * Uzmi reCAPTCHA v3 token (ako je ukljucen).
+     * Vraca:
+     *   - string sa tokenom (ili '' ako recaptcha nije konfigurisana)
+     *   - null ako token NIJE mogao biti dobijen (adblock, network) - ne nastavljaj
+     */
+    async getRecaptchaToken(action) {
+        const cfg = window.RECAPTCHA;
+        if (!cfg || !cfg.enabled) {
+            return ''; // recaptcha nije ukljucena na serveru
+        }
+        try {
+            return await new Promise((resolve, reject) => {
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(cfg.siteKey, { action: action })
+                        .then(resolve)
+                        .catch(reject);
+                });
+                // Safety timeout - ako Google skripta ne učita (adblock itd.)
+                setTimeout(() => reject(new Error('recaptcha-timeout')), 10000);
+            });
+        } catch (err) {
+            console.error('reCAPTCHA error:', err);
+            return null;
+        }
+    }
+    
     async handleLogin() {
-        // Prikaži loading
+        if (this.errorDiv) {
+            this.errorDiv.innerHTML = '';
+        }
+        
+        // Prikaži loading (odmah, da spreči double-click)
         this.submitBtn = this.loginForm.querySelector('button[type="submit"]');
         this.originalButtonText = this.submitBtn.innerHTML;
         this.submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Prijavljujem...';
         this.submitBtn.disabled = true;
         
+        // Uzmi reCAPTCHA token PRE slanja
+        const recaptchaToken = await this.getRecaptchaToken('login');
+        if (recaptchaToken === null) {
+            this.showError('Nije moguća reCAPTCHA verifikacija. Proverite internet vezu i pokušajte ponovo.');
+            this.resetButton();
+            return;
+        }
+        
         // Sakupi podatke
         const formData = new FormData(this.loginForm);
         const data = Object.fromEntries(formData.entries());
+        data.recaptcha_token = recaptchaToken;
         
         // Prosta validacija
         if (!data.username || !data.password) {
@@ -128,22 +168,19 @@ class LoginHandler {
         }
         
         // Prikaži poseban alert za verifikaciju
+        // FIX: escapeHtml na korisničkim podacima (email/redirect) - zaštita od XSS
+        const safeEmail = this.escapeHtml(result.email || '');
+        const safeRedirect = this.escapeHtml(result.redirect || '?page=resend-verification');
         const verificationAlert = `
             <div class="alert alert-warning alert-dismissible fade show">
                 <h5><i class="fas fa-envelope me-2"></i> Verifikacija Email-a Potrebna</h5>
-                <p>Vaš email <strong>${result.email}</strong> nije verifikovan.</p>
+                <p>Vaš email <strong>${safeEmail}</strong> nije verifikovan.</p>
                 <p>Molimo proverite Vaš inbox za verifikacioni email.</p>
                 <div class="mt-3">
-                    <a href="${result.redirect || '?page=resend-verification'}" 
+                    <a href="${safeRedirect}" 
                        class="btn btn-warning btn-sm">
                         <i class="fas fa-paper-plane me-1"></i> Pošalji ponovo verifikacioni email
                     </a>
-                    ${result.verification_link ? `
-                    <a href="${result.verification_link}" 
-                       class="btn btn-outline-warning btn-sm ms-2">
-                        <i class="fas fa-link me-1"></i> Verifikuj direktno
-                    </a>
-                    ` : ''}
                 </div>
             </div>
         `;

@@ -2,28 +2,10 @@
 /**
  * index.php - GLAVNI RUTER
  */
-//require_once 'config/constants.php';
-// 1. POKRENI SESIJU - OVO PRVO!
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
-// ============================================
-// 🔥 DODAJ OVO - PROVERA DA LI JE KORISNIK PRIJAVLJEN
-// ============================================
-// Ako je korisnik prijavljen, ali sesija nema podatke - odjavi ga
-if (isset($_SESSION['user_id']) && empty($_SESSION['user_id'])) {
-    logout();
-    redirect('/');
-    exit;
-}
-
-
-
-// 2. OUTPUT BUFFERING - za sigurnost
-ob_start();
-
-// 3. UČITAJ KONFIGURACIJU
+// 1. UČITAJ KONFIGURACIJU PRVO
+//    (constants.php sam pokreće sesiju sa sigurnim cookie parametrima -
+//     ne zovemo session_start() ovde jer bi kolacici ostali bez HttpOnly/SameSite)
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 require_once 'includes/auth.php';
@@ -32,23 +14,38 @@ require_once 'includes/messages.php';
 require_once 'includes/categories.php';
 require_once 'includes/packages.php';
 
+// ============================================
+// PROVERA DA LI JE KORISNIK PRIJAVLJEN
+// ============================================
+// Ako sesija ima 'user_id', ali je prazan (npr. oštećena sesija) - odjavi ga
+if (array_key_exists('user_id', $_SESSION) && empty($_SESSION['user_id'])) {
+    logout();
+    redirect('/');
+    exit;
+}
+
+// 2. OUTPUT BUFFERING - za sigurnost
+ob_start();
+
 // 4. RUTIRANJE
 $page = $_GET['page'] ?? 'home';
+// FIX: spreCava 'array to string' TypeError ako neko posalje ?page[]=x
+if (!is_string($page)) {
+    $page = 'home';
+}
+$page = preg_replace('/[^a-zA-Z0-9_-]/', '', $page) ?: 'home';
 
 // ============================================
 // 🔥 DODAJ OVO - DIREKTAN PRISTUP LOGOUTU
 // ============================================
 if ($page === 'logout') {
     // Pozovi logout funkciju iz auth.php
+    // (FATAL FIX: ranije se ovde zvao ponovni session_start() - PHP je
+    //  ispisivao warning; a 'logout_message' sesija se ionako nikad ne cita)
     logout();
-    
-    // Sačuvaj poruku
-    session_start();
-    $_SESSION['logout_message'] = 'Uspešno ste se odjavili.';
-    session_write_close();
-    
+
     // Preusmeri na home
-    redirect('/');
+    redirect('/?logged_out=1');
     exit;
 }
 
@@ -60,7 +57,7 @@ if (!array_key_exists($page, $validPages)) {
 }
 
 // Proveri pristup (zaštićene stranice)
-$protectedPages = ['create-ad', 'edit-ad', 'profile', 'dashboard', 'messages'];
+$protectedPages = ['create-ad', 'edit-ad', 'profile', 'dashboard', 'messages', 'notifications'];
 if (in_array($page, $protectedPages) && !isLoggedIn()) {
     $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
     redirect('/login');

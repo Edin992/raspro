@@ -96,6 +96,14 @@ if (isset($_SESSION['user_id'])) {
                 </div>
             </form>
             
+            <!-- ZVONCE NOTIFIKACIJA (desktop) -->
+            <button class="btn btn-sm btn-outline-secondary ms-2 position-relative" id="notif-bell-desktop"
+                    type="button" title="Obaveštenja" aria-label="Obaveštenja">
+                <i class="far fa-bell fs-6"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none notif-badge"
+                      style="font-size:0.6rem;">0</span>
+            </button>
+
             <!-- DARK MODE TOGGLE -->
             <button class="btn btn-sm btn-outline-secondary ms-2" id="theme-toggle" title="Promeni temu">
                 <i class="fas fa-moon"></i>
@@ -252,47 +260,150 @@ if (isset($_SESSION['user_id'])) {
     </div>
 </nav>
 
-<!-- MOBILE SEARCH BAR (na vrhu ispod status bara) -->
+<!-- MOBILE SEARCH BAR + HAMBURGER (na vrhu ispod status bara) -->
 <div class="d-lg-none bg-white border-bottom" style="padding-top: env(safe-area-inset-top);">
     <div class="container py-2">
-        <form action="/ads/" method="GET" class="d-flex">
-            <input type="hidden" name="page" value="ads">
-            <div class="input-group">
-                <input type="text" class="form-control" name="q" 
-                       placeholder="Pretraži oglase..."
-                       value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
-                <button class="btn btn-primary" type="submit">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </form>
+        <div class="d-flex align-items-center gap-2">
+            <!-- HAMBURGER - otvara side meni -->
+            <button class="btn btn-outline-secondary flex-shrink-0" type="button"
+                    data-bs-toggle="offcanvas" data-bs-target="#mobileSideMenu"
+                    aria-controls="mobileSideMenu" aria-label="Otvori meni"
+                    style="min-width:42px;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <form action="/ads/" method="GET" class="d-flex flex-grow-1">
+                <input type="hidden" name="page" value="ads">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="q" 
+                           placeholder="Pretraži oglase..."
+                           value="<?php echo isset($_GET['q']) ? htmlspecialchars($_GET['q']) : ''; ?>">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+            <!-- ZVONCE NOTIFIKACIJA (mobilno) -->
+            <a href="#" class="btn btn-outline-secondary flex-shrink-0 position-relative" 
+               id="notif-bell-mobile" title="Obaveštenja" aria-label="Obaveštenja" style="min-width:42px;">
+                <i class="far fa-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none notif-badge">0</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ============ MOBILE SIDE MENU (offcanvas) ============ -->
+<?php
+    $infoPages = [
+        'how-it-works' => ['Kako radi?', 'fa-question-circle', '/how-it-works/'],
+        'about'        => ['O nama', 'fa-info-circle', '/about/'],
+        'contact'      => ['Kontakt', 'fa-envelope', '/contact/'],
+        'faq'          => ['Pitanja i odgovori (FAQ)', 'fa-comments', '/faq/'],
+        'safety'       => ['Bezbedna kupovina', 'fa-shield-alt', '/safety/'],
+        'packages'     => ['Premium paketi', 'fa-crown', '/packages/'],
+    ];
+    $legalPages = [
+        'terms'   => ['Uslovi korišćenja', 'fa-file-contract', '/terms/'],
+        'privacy' => ['Politika privatnosti', 'fa-user-secret', '/privacy/'],
+        'cookies' => ['Politika kolačića', 'fa-cookie-bite', '/cookies/'],
+    ];
+?>
+<div class="offcanvas offcanvas-start" tabindex="-1" id="mobileSideMenu" aria-labelledby="mobileSideMenuLabel"
+     style="width: 300px; max-width: 85vw;">
+    <div class="offcanvas-header bg-primary text-white">
+        <h5 class="offcanvas-title mb-0 text-white" id="mobileSideMenuLabel">
+            <i class="fas fa-compass me-2"></i> Meni
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Zatvori"></button>
+    </div>
+    <div class="offcanvas-body p-0 d-flex flex-column">
+        <!-- KORISNIK -->
+        <div class="p-3 border-bottom">
+            <?php if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])): ?>
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
+                         style="width:44px;height:44px;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <strong class="d-block"><?php echo htmlspecialchars($_SESSION['user_name'] ?? 'Korisnik'); ?></strong>
+                        <a href="/logout" class="small text-danger text-decoration-none">
+                            <i class="fas fa-sign-out-alt me-1"></i>Odjavi se
+                        </a>
+                    </div>
+                </div>
+                <div class="d-grid gap-2 mt-3">
+                    <a class="btn btn-sm btn-outline-primary" href="/dashboard/"><i class="fas fa-tachometer-alt me-2"></i>Kontrolna tabla</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/messages/"><i class="fas fa-envelope me-2"></i>Poruke</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/profile/<?php echo (int)$_SESSION['user_id']; ?>"><i class="fas fa-user me-2"></i>Moj profil</a>
+                </div>
+            <?php else: ?>
+                <p class="small text-muted mb-2">Prijavite se za slanje poruka i upravljanje oglasima</p>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-sm btn-primary" href="/login/"><i class="fas fa-sign-in-alt me-2"></i>Prijava</a>
+                    <a class="btn btn-sm btn-outline-primary" href="/register/"><i class="fas fa-user-plus me-2"></i>Registracija</a>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- GLAVNE STRANICE -->
+        <nav class="nav flex-column p-2">
+            <a class="nav-link py-2 <?php echo (($page ?? 'home') == 'home') ? 'active fw-bold text-primary' : ''; ?>" href="/home/">
+                <i class="fas fa-home me-3 text-primary"></i> Početna
+            </a>
+            <a class="nav-link py-2 <?php echo (strpos($page ?? '', 'ads') !== false) ? 'active fw-bold text-primary' : ''; ?>" href="/ads/">
+                <i class="fas fa-th-list me-3 text-primary"></i> Svi oglasi
+            </a>
+            <a class="nav-link py-2" href="/ads/premium/">
+                <i class="fas fa-crown me-3 text-warning"></i> Premium oglasi
+            </a>
+            <a class="nav-link py-2" href="/categories/">
+                <i class="fas fa-sitemap me-3 text-primary"></i> Kategorije
+            </a>
+            <a class="nav-link py-2 text-success fw-semibold" href="/create-ad/">
+                <i class="fas fa-plus-circle me-3"></i> Postavi oglas
+            </a>
+        </nav>
+
+        <!-- INFORMATIVNE -->
+        <div class="px-3 pt-2 pb-1 small text-uppercase text-muted fw-bold">Informacije</div>
+        <nav class="nav flex-column px-2 pb-2">
+            <?php foreach ($infoPages as $key => $info): ?>
+            <a class="nav-link py-2 <?php echo (($page ?? '') === $key) ? 'active fw-bold text-primary' : ''; ?>" href="<?php echo $info[2]; ?>">
+                <i class="fas <?php echo $info[1]; ?> me-3 text-secondary"></i> <?php echo $info[0]; ?>
+            </a>
+            <?php endforeach; ?>
+        </nav>
+
+        <!-- PRAVNO + KOLACICI -->
+        <div class="px-3 pt-1 pb-1 small text-uppercase text-muted fw-bold">Pravno i postavke</div>
+        <nav class="nav flex-column px-2 pb-2">
+            <?php foreach ($legalPages as $key => $info): ?>
+            <a class="nav-link py-2 <?php echo (($page ?? '') === $key) ? 'active fw-bold text-primary' : ''; ?>" href="<?php echo $info[2]; ?>">
+                <i class="fas <?php echo $info[1]; ?> me-3 text-secondary"></i> <?php echo $info[0]; ?>
+            </a>
+            <?php endforeach; ?>
+            <a class="nav-link py-2" href="#" data-open-cookie-settings>
+                <i class="fas fa-sliders-h me-3 text-secondary"></i> Podešavanja kolačića
+            </a>
+            <button class="nav-link py-2 text-start btn btn-link border-0" type="button" id="mobile-theme-toggle-side">
+                <i class="fas fa-moon me-3 text-secondary"></i> <span class="mobile-theme-label">Tamna tema</span>
+            </button>
+        </nav>
+
+        <div class="mt-auto p-3 border-top text-center">
+            <small class="text-muted">
+                Podrška: <a href="tel:+381601234567" class="text-decoration-none">060 123 4567</a>
+            </small>
+        </div>
     </div>
 </div>
 
 <!-- PRAZAN PROSTOR ZA BOTTOM NAV NA MOBILNIM -->
 <div class="d-lg-none" style="height: 70px;"></div>
 
-<!-- DARK MODE TOGGLE SKRIPT (opciono) -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const themeToggle = document.getElementById('theme-toggle');
-    if (themeToggle) {
-        // Proveri da li je dark mode sačuvan
-        const isDark = localStorage.getItem('theme') === 'dark';
-        if (isDark) {
-            document.body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-        
-        themeToggle.addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-            const isDarkNow = document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
-            this.innerHTML = isDarkNow ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        });
-    }
-});
-</script>
+<!-- Theme toggle logika je centralizovana u layout/scripts.php -> initThemeSwitcher()
+     (Fiksira bag: dva takmičarska handlera na istom dugmetu)
 
 <style>
 /* Popravka za mobilni dropdown meni - prikazuje se lepo na malim ekranima */

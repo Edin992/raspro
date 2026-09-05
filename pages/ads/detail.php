@@ -48,6 +48,29 @@ $images = getAdImages($adId);
 $adOwner = getUserById($ad['user_id']);
 
 // ============================================
+// OCENA PRODAVCA (prosek recenzija) - za "Prodavac" karticu
+// ============================================
+$sellerReviewStats = ['total_reviews' => 0, 'avg_rating' => 0];
+if (!empty($adOwner['id'])) {
+    try {
+        $db2 = getDatabaseConnection();
+        $stmtSR = $db2->prepare("
+            SELECT COUNT(*) as total_reviews, ROUND(AVG(rating), 2) as avg_rating
+            FROM user_reviews
+            WHERE user_id = ? AND is_approved = 1
+        ");
+        $stmtSR->execute([(int) $adOwner['id']]);
+        $sr = $stmtSR->fetch();
+        if ($sr) {
+            $sellerReviewStats['total_reviews'] = (int) $sr['total_reviews'];
+            $sellerReviewStats['avg_rating'] = (float) $sr['avg_rating'];
+        }
+    } catch (Throwable $e) {
+        error_log('seller rating query: ' . $e->getMessage());
+    }
+}
+
+// ============================================
 // PROVERA ZA OBNOVU OGLASA (samo za vlasnika)
 // ============================================
 $showRenewButton = false;
@@ -562,7 +585,14 @@ $isOwner = isLoggedIn() && $_SESSION['user_id'] == $ad['user_id'];
                     <div class="mb-3">
                         <small class="text-muted">
                             <i class="fas fa-star text-warning me-1"></i>
-                            Ocena: <?php echo $adOwner['rating'] ?? 'Nema recenzija'; ?> |
+                            <?php if ($sellerReviewStats['total_reviews'] > 0): ?>
+                                <strong><?php echo number_format($sellerReviewStats['avg_rating'], 1); ?>/5</strong>
+                                <span class="review-stars ms-1" title="<?php echo $sellerReviewStats['total_reviews']; ?> recenzija"><?php for ($si = 1; $si <= 5; $si++): ?><?php echo $si <= round($sellerReviewStats['avg_rating']) ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>'; ?><?php endfor; ?></span>
+                                (<?php echo $sellerReviewStats['total_reviews']; ?> ocena<?php echo $sellerReviewStats['total_reviews'] > 1 ? '' : ''; ?>)
+                            <?php else: ?>
+                                Nema recenzija
+                            <?php endif; ?>
+                            |
                             <i class="fas fa-bullhorn me-1 ms-2"></i>
                             Oglasa: <?php echo $adOwner['ads_count'] ?? 0; ?>
                         </small>

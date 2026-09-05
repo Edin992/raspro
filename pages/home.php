@@ -9,9 +9,22 @@ $pageDescription = 'Kupujte i prodajte brzo, lako i bezbedno. Preko 100.000 ogla
 $pageSpecificJS = ['home.js'];
 $showBreadcrumbs = false;
 
+// FIX: 'logout_message' u sesiji nikad nije prikazivan jer logout()
+// unisti sesiju - poruka se sada nosi preko ?logged_out=1 parametra
+$showLoggedOutNotice = isset($_GET['logged_out']);
+
 // Učitaj kategorije za PHP
 $popularCategories = getPopularCategories(10);
 ?>
+
+<?php if ($showLoggedOutNotice): ?>
+<div class="container mt-3">
+    <div class="alert alert-success alert-dismissible fade show mb-0" role="alert">
+        <i class="fas fa-check-circle me-2"></i> Uspešno ste se odjavili.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Zatvori"></button>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- HERO SECTION - RESPONZIVAN (VIDLJIV NA SVIM UREĐAJIMA) -->
 <section class="hero-section mb-5 py-4 py-md-5">
