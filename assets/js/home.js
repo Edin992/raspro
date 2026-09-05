@@ -442,3 +442,4 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('❌ Error initializing HomePage:', error);
     }
 });
+
