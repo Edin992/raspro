@@ -3,6 +3,15 @@
  * config/constants.php - Konfiguracione konstante
  */
 if (session_status() === PHP_SESSION_NONE) {
+    // Bezbednosni parametri kolacica sesije (PHP >= 7.3)
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'domain'   => '',
+        'secure'   => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+        'httponly' => true,   // JS ne sme da cita kolacic sesije
+        'samesite' => 'Lax',  // blaga CSRF zastita; same-origin AJAX radi normalno
+    ]);
     session_start();
 }
 
@@ -71,10 +80,27 @@ define('UPLOADS_PATH', ROOT_PATH . '/assets/uploads/');
 
 
 // ============================================
-// REKAPTCHA (opciono za budućnost)
+// RECAPTCHA v3 (Google) - zastita login/registration od botova
 // ============================================
-define('RECAPTCHA_SITE_KEY', ''); // Ostavi prazno za sada
-define('RECAPTCHA_SECRET_KEY', ''); // Ostavi prazno za sada
+// Kljuceve napravite na: https://www.google.com/recaptcha/admin
+// Tip: reCAPTCHA v3 ("Nisam robot", domen: rasprodaja.rs + www.rasprodaja.rs)
+// Kad unesete oba kljuca, zastita se AUTOMATSKI ukljucuje za login i register.
+// Ostavite prazno dok ne napravite kljuceve (tada se provera preskace).
+if (!defined('RECAPTCHA_SITE_KEY')) {
+    define('RECAPTCHA_SITE_KEY', '');   // <-- ovde vase SITE (public) key
+}
+if (!defined('RECAPTCHA_SECRET_KEY')) {
+    define('RECAPTCHA_SECRET_KEY', ''); // <-- ovde vase SECRET key
+}
+// minimalni Google score (0.0 - 1.0) ispod koga zahtev padas
+// 0.5 je preporuka za login/register; ako ima laznih odbijanja spusti na 0.4
+if (!defined('RECAPTCHA_MIN_SCORE')) {
+    define('RECAPTCHA_MIN_SCORE', 0.5);
+}
+// timeout (sekunde) za poziv Google siteverify API-ja
+if (!defined('RECAPTCHA_VERIFY_TIMEOUT')) {
+    define('RECAPTCHA_VERIFY_TIMEOUT', 5);
+}
 
 // ============================================
 // DEBUG MODE
@@ -102,8 +128,11 @@ if (DEBUG_MODE) {
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
-    error_reporting(0);
+    // Greske se LOGGUJU (error_log), ali NE prikazuju posetiocima.
+    // Ranije: error_reporting(0) - potpuno gusenje gresaka otezava debugging.
+    error_reporting(E_ALL & ~E_DEPRECATED);
     ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
 }
 
 // ============================================
@@ -122,6 +151,10 @@ define('EMAIL_TEMPLATE_PATH', ROOT_PATH . '/templates/emails/');
 // API KEYS (za budućnost)
 // ============================================
 define('GOOGLE_MAPS_API_KEY', ''); // Ostavi prazno za sada
+
+// Google Analytics ID (npr. 'G-XXXXXXXXXX').  Skripta se ucitava SAMO ako
+// korisnik prihvati analiticke kolacice (assets/js/cookies.js).
+define('GOOGLE_ANALYTICS_ID', '');
 
 // ============================================
 // TIMEZONE

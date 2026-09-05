@@ -36,7 +36,7 @@ $inlineScripts = "
         if (!cityInput || !datalist) return;
         
         // Dohvati gradove iz baze preko API-ja
-        fetch(SITE_CONFIG.url + '/api/cities.php')
+        fetch(SITE_CONFIG.url + '/api/cities/popular.php')
             .then(response => response.json())
             .then(data => {
                 if (data.success && data.cities) {
@@ -52,6 +52,8 @@ $inlineScripts = "
     }
 ";
 ?>
+
+<?php echo recaptcha_render_scripts(); ?>
 
 <div class="container py-5">
     <div class="row justify-content-center">
@@ -70,6 +72,7 @@ $inlineScripts = "
                     <form id="register-form" novalidate>
                         <!-- CSRF TOKEN -->
                         <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
+                        <input type="hidden" name="recaptcha_token" id="recaptcha-token">
                         
                         <!-- JEDNOSTEPENA FORMA (nema više koraka) -->
                         <div class="form-step">
@@ -284,6 +287,14 @@ $inlineScripts = "
                                 </div>
                             </div>
                             
+                            <?php if (recaptcha_is_enabled()): ?>
+                            <p class="text-center small text-muted mb-2">
+                                Zaštićeno reCAPTCHA tehnologijom — primenjuju se
+                                <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google Politika privatnosti</a>
+                                i <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Uslovi korišćenja</a>.
+                            </p>
+                            <?php endif; ?>
+
                             <!-- DUGMAD -->
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg">

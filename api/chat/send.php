@@ -2,20 +2,16 @@
 /**
  * api/chat/send.php - ISPRAVLJENA VERZIJA sa boljom proverom duplih razgovora
  */
-session_start();
-error_log("=== SEND.PHP POKRENUT ===");
+// FIX: session_start() je otudan - constants.php (preko database.php)
+// pokrece sesiju sa HttpOnly/SameSite kolacicima.
 require_once __DIR__ . '/../../config/database.php';
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-
+// FIX: 'Access-Control-Allow-Origin: *' + credentials je nevalidna kombinacija;
+// forma i API su ISTOG porekla, pa CORS zaglavlja nisu potrebna.
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
+    http_response_code(204);
     exit();
 }
-
 
 require_once __DIR__ . '/../../includes/functions.php';
 
@@ -45,10 +41,33 @@ if (empty($message)) {
     exit();
 }
 
-if (!isset($_SESSION['csrf_token']) || $csrf_token !== $_SESSION['csrf_token']) {
+if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], (string)$csrf_token)) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'CSRF token nije validan']);
     exit();
+}
+
+// ============================================
+// PRIVATNOST PRIMAOCA: ako je 'message_privacy' = none - blokiraj
+// (podesavanje korisnika -> user_settings tabela)
+// ============================================
+if ($receiverId !== $senderId) {
+    try {
+        $stmtP = getDatabaseConnection()->prepare("SELECT settings FROM user_settings WHERE user_id = ? LIMIT 1");
+        $stmtP->execute([(int) $receiverId]);
+        $rowP = $stmtP->fetch();
+        if ($rowP && !empty($rowP['settings'])) {
+            $rSet = is_string($rowP['settings']) ? json_decode($rowP['settings'], true) : $rowP['settings'];
+            if (is_array($rSet) && ($rSet['privacy']['message_privacy'] ?? 'everyone') === 'none') {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Korisnik ne prima poruke.', 'code' => 'messages_disabled']);
+                exit();
+            }
+        }
+    } catch (Throwable $e) {
+        // ako tabela ne postoji (migracija nije odrađena) - NE blokiramo
+        error_log('message_privacy check: ' . $e->getMessage());
+    }
 }
 
 try {
@@ -71,7 +90,7 @@ try {
         
         if ($existing) {
             $conversationId = $existing['id'];
-            error_log("✓ Pronađena postojeća konverzacija ID: $conversationId za ad_id: $adId");
+            // postojeca konverzacija za isti oglas
         }
     }
     
@@ -89,14 +108,14 @@ try {
         
         if ($existing) {
             $conversationId = $existing['id'];
-            error_log("✓ Pronađena postojeća konverzacija bez oglasa ID: $conversationId");
+            // postojeca konverzacija bez oglasa
         }
     }
     
     // Ako i dalje nema konverzacije, kreiraj novu
     if (!$conversationId) {
         $uuid = bin2hex(random_bytes(16));
-        error_log("✗ Nema postojeće konverzacije, kreiram novu sa UUID: $uuid");
+        // nova konverzacija
         
         $stmt = $db->prepare("
             INSERT INTO conversations (uuid, user1_id, user2_id, ad_id, created_at)
@@ -157,6 +176,6 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Greška pri slanju poruke: ' . $e->getMessage()
+        'message' => 'Greška pri slanju poruke. Pokušajte ponovo.'
     ]);
 }

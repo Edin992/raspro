@@ -18,7 +18,8 @@ function getValidPages() {
         'register' => 'pages/user/register.php',
         'profile' => 'pages/user/profile.php',
         'dashboard' => 'pages/user/dashboard.php',
-        'messages' => 'pages/user/messages.php',
+        'messages' => 'pages/user/messages.php',
+        'notifications' => 'pages/user/notifications.php',
         'verify-email' => 'pages/user/verify-email.php',
         'resend-verification' => 'pages/user/resend-verification.php',
         'forgot-password' => 'pages/user/forgot-password.php',
@@ -39,7 +40,7 @@ function getValidPages() {
         // Kategorije i paketi
         'categories' => 'pages/categories.php',
         'packages' => 'pages/packages.php',
-        'premium-ads' => 'pages/premium-ads.php',
+        'premium-ads' => 'pages/ads/listing.php', // FIX: pages/premium-ads.php ne postoji - listing sa premium filterom
         
         
         
@@ -61,7 +62,8 @@ function getPageTitle($page) {
         'register' => 'Registruj se - Rasprodaja.rs',
         'profile' => 'Moj profil - Rasprodaja.rs',
         'dashboard' => 'Kontrolna tabla - Rasprodaja.rs',
-        'messages' => 'Poruke - Rasprodaja.rs',
+        'messages' => 'Poruke - Rasprodaja.rs',
+        'notifications' => 'Obaveštenja - Rasprodaja.rs',
         'how-it-works' => 'Kako radi? - Rasprodaja.rs',
         'contact' => 'Kontakt - Rasprodaja.rs',
         'about' => 'O nama - Rasprodaja.rs',

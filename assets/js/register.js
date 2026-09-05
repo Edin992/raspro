@@ -186,6 +186,30 @@ class RegistrationForm {
         toggleFields();
     }
     
+    /**
+     * Uzmi reCAPTCHA v3 token (ako je ukljucen na serveru).
+     * Vraca '' kada recaptcha nije konfigurisana, null kada je doslo do greske.
+     */
+    async getRecaptchaToken(action) {
+        const cfg = window.RECAPTCHA;
+        if (!cfg || !cfg.enabled) {
+            return '';
+        }
+        try {
+            return await new Promise((resolve, reject) => {
+                grecaptcha.ready(() => {
+                    grecaptcha.execute(cfg.siteKey, { action: action })
+                        .then(resolve)
+                        .catch(reject);
+                });
+                setTimeout(() => reject(new Error('recaptcha-timeout')), 10000);
+            });
+        } catch (err) {
+            console.error('reCAPTCHA error:', err);
+            return null;
+        }
+    }
+    
     async handleSubmit() {
         // Sakupi podatke iz forme
         const formData = new FormData(this.form);
@@ -199,8 +223,17 @@ class RegistrationForm {
             return;
         }
         
-        // Prikaži loading
+        // Prikazi loading
         this.showLoading(true);
+        
+        // Uzmi reCAPTCHA token pre slanja
+        const recaptchaToken = await this.getRecaptchaToken('register');
+        if (recaptchaToken === null) {
+            this.showErrors(['Nije moguća reCAPTCHA verifikacija. Proverite internet vezu i pokušajte ponovo.']);
+            this.showLoading(false);
+            return;
+        }
+        data.recaptcha_token = recaptchaToken;
         
         try {
             // Pošalji podatke na server

@@ -71,6 +71,12 @@ function logout() {
         session_start();
     }
     
+    // FIX: "Zapamti me" - pri odjavi moramo obrisati i remember token
+    // iz baze i kolacic, inace bi korisnik bio automatski prijavljen ponovo
+    if (function_exists('rememberMeClear') && !empty($_SESSION['user_id'])) {
+        rememberMeClear($_SESSION['user_id']);
+    }
+    
     // Obriši sve promenljive sesije
     $_SESSION = array();
     
@@ -201,4 +207,37 @@ function canPostAdWithVerification($userId = null) {
     }
     
     return canPostAd($userId);
+}
+// ============================================
+// CSRF za API mutacije (POST/PUT/DELETE)
+// ============================================
+/**
+ * Proverava csrf_token iz input-a, $_POST-a ili X-CSRF-Token header-a.
+ * Vraca true/false - pozivalac odlucuje o odgovoru.
+ */
+function checkCSRFToken($input = []) {
+    if (session_status() === PHP_SESSION_NONE || empty($_SESSION['csrf_token'])) {
+        return false;
+    }
+    $token = '';
+    if (is_array($input) && !empty($input['csrf_token'])) {
+        $token = (string) $input['csrf_token'];
+    } elseif (!empty($_POST['csrf_token'])) {
+        $token = (string) $_POST['csrf_token'];
+    } else {
+        $hdr = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        if ($hdr !== '') $token = (string) $hdr;
+    }
+    return $token !== '' && hash_equals($_SESSION['csrf_token'], $token);
+}
+
+/**
+ * JSON varijanta: salje 403 i prekida zahtev ako CSRF ne prodje.
+ */
+function requireCSRFTokenJSON($input = []) {
+    if (!checkCSRFToken($input)) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'message' => 'Sesija je istekla. Osvežite stranicu i pokušajte ponovo.', 'code' => 'csrf_failed']);
+        exit();
+    }
 }

@@ -23,13 +23,34 @@ class MessagingApp {
         this.loadUnreadCount();
         this.loadConversations();
         
-        // Auto-refresh svakih 10 sekundi
+        // Auto-refresh - SAMO kad je tab vidljiv (stedi server/bateriju)
         this.startPolling();
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                this.loadConversations();
+                this.startPolling();
+            } else {
+                this.stopPolling();
+            }
+        });
         
-        // Inicijalno otvori prvi razgovor ako postoji
-        setTimeout(() => {
-            this.openFirstConversation();
-        }, 500);
+        // FIX: NE otvaramo vise "poslednji razgovor" automatski.
+        // Razgovor se otvara SAMO ako:
+        //  a) korisnik klikne na njega, ili
+        //  b) postoji deep-link ?conversation=ID (npr. iz notifikacije)
+        const params = new URLSearchParams(window.location.search);
+        const deepConv = params.get('conversation');
+        if (deepConv) {
+            setTimeout(() => {
+                // ID drugog korisnika uzmemo iz stavke liste (renderovana server-side),
+                // sa fallback-om na ?user= parametar
+                const item = document.querySelector(`.conversation-item[data-conversation-id="${deepConv}"]`);
+                const deepUser = (item && item.dataset.otherUserId) || params.get('user');
+                if (item && deepUser) {
+                    this.openConversation(deepConv, deepUser);
+                }
+            }, 400);
+        }
     }
 
     bindEvents() {
@@ -103,6 +124,30 @@ class MessagingApp {
             });
         }
 
+        // Ocena sagovornika
+        const rateBtn = document.getElementById('rateUserBtn');
+        if (rateBtn) {
+            rateBtn.addEventListener('click', () => this.openReviewModal());
+        }
+        document.querySelectorAll('#reviewStarInput i').forEach(star => {
+            star.addEventListener('click', () => {
+                this._reviewRating = parseInt(star.dataset.value, 10);
+                this.updateStars(this._reviewRating);
+            });
+        });
+        const reviewForm = document.getElementById('reviewForm');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.submitReview();
+            });
+            const ta = document.getElementById('reviewComment');
+            if (ta) ta.addEventListener('input', () => {
+                const c = document.getElementById('reviewCharCount');
+                if (c) c.textContent = String(ta.value.length);
+            });
+        }
+
         // Search
         const searchInput = document.getElementById('search-conversations');
         if (searchInput) {
@@ -150,16 +195,7 @@ class MessagingApp {
         }
     }
 
-    openFirstConversation() {
-        const firstItem = document.querySelector('.conversation-item');
-        if (firstItem && !this.currentConversation) {
-            const convId = firstItem.dataset.conversationId;
-            const userId = firstItem.dataset.otherUserId;
-            if (convId && userId) {
-                this.openConversation(convId, userId);
-            }
-        }
-    }
+    // openFirstConversation() je UKLONJEN (zahtev korisnika): lista se ne otvara sama
 
     hideMobileHeader() {
         const mobileHeader = document.getElementById('mobileHeader');
@@ -224,6 +260,7 @@ class MessagingApp {
 
             this.loadMessages(conversationId);
             this.markAsRead(conversationId);
+            this.refreshReviewEligibility(conversationId);
 
             // FOKUSIRANJE - POBOLJŠANO ZA MOBILE
             setTimeout(() => {
@@ -668,17 +705,25 @@ class MessagingApp {
     }
 
     startPolling() {
-        if (this.pollingInterval) {
-            clearInterval(this.pollingInterval);
-        }
-        
+        this.stopPolling();
         this.pollingInterval = setInterval(() => {
+            if (document.visibilityState !== 'visible') return;
             if (this.currentConversation) {
                 this.checkNewMessages();
             }
             this.loadUnreadCount();
-            this.loadConversations();
+            // Listu osvezavamo samo kad nijedan chat nije otvoren (manje treperenja DOM-a)
+            if (!this.currentConversation) {
+                this.loadConversations();
+            }
         }, 10000);
+    }
+    
+    stopPolling() {
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+            this.pollingInterval = null;
+        }
     }
 
     checkNewMessages() {
@@ -845,6 +890,134 @@ class MessagingApp {
             setTimeout(() => div.remove(), 300);
         }, 3000);
     }
+    // ============================================
+    // OCENJIVANJE SAGOVORNIKA (recenzije)
+    // ============================================
+    refreshReviewEligibility(conversationId) {
+        const btn = document.getElementById('rateUserBtn');
+        if (!btn) return;
+        btn.classList.add('d-none');
+        fetch(`${SITE_CONFIG.url}/api/reviews/check-eligibility.php?conversation_id=${conversationId}`, {
+            credentials: 'same-origin'
+        })
+        .then(r => r.json())
+        .then(res => {
+            // Sakrij ako je vec ocenjeno - i onemoguci ponovno otvaranje
+            this._reviewState = res || null;
+            if (res && res.can_review) {
+                btn.classList.remove('d-none');
+                btn.dataset.reviewed = '0';
+            } else if (res && res.already_reviewed) {
+                btn.classList.remove('d-none');
+                btn.classList.remove('btn-outline-warning');
+                btn.classList.add('btn-warning');
+                btn.title = 'Već ste ocenili ovaj razgovor';
+                btn.innerHTML = '<i class="fas fa-star"></i>';
+                btn.dataset.reviewed = '1';
+            }
+        })
+        .catch(() => {});
+    }
+    
+    openReviewModal() {
+        const btn = document.getElementById('rateUserBtn');
+        if (btn && btn.dataset.reviewed === '1') return;
+        
+        document.getElementById('reviewConversationId').value = this.currentConversation;
+        const nameEl = document.getElementById('reviewTargetName');
+        const otherName = (this._reviewState && this._reviewState.other_user && this._reviewState.other_user.name)
+            ? this._reviewState.other_user.name : null;
+        if (nameEl && otherName) nameEl.textContent = otherName;
+        
+        // Reset stanja
+        this._reviewRating = 0;
+        this.updateStars(0);
+        const err = document.getElementById('reviewError');
+        if (err) err.classList.add('d-none');
+        const form = document.getElementById('reviewForm');
+        if (form) form.reset();
+        const counter = document.getElementById('reviewCharCount');
+        if (counter) counter.textContent = '0';
+        
+        const modalEl = document.getElementById('reviewModal');
+        new bootstrap.Modal(modalEl).show();
+    }
+    
+    updateStars(value) {
+        document.querySelectorAll('#reviewStarInput i').forEach(star => {
+            const v = parseInt(star.dataset.value, 10);
+            const isOn = v <= value;
+            // solid (fas) kad je izabrano, outline (far) kad nije
+            star.classList.toggle('fas', isOn);
+            star.classList.toggle('far', !isOn);
+            star.classList.toggle('checked', isOn);
+            star.setAttribute('aria-checked', isOn ? 'true' : 'false');
+        });
+        const labels = { 1: 'Loše', 2: 'Ispod očekivanog', 3: 'Korektno', 4: 'Dobro', 5: 'Odlično' };
+        const t = document.getElementById('reviewRatingText');
+        if (t) t.textContent = value ? labels[value] : 'Izaberite ocenu';
+    }
+    
+    async submitReview() {
+        const errBox = document.getElementById('reviewError');
+        errBox.classList.add('d-none');
+        
+        if (!this._reviewRating || this._reviewRating < 1) {
+            this.showReviewError(errBox, 'Izaberite broj zvezdica.');
+            return;
+        }
+        const comment = document.getElementById('reviewComment').value.trim();
+        if (comment.length < 5) {
+            this.showReviewError(errBox, 'Napišite kratko obrazloženje (min. 5 karaktera).');
+            return;
+        }
+        
+        const btn = document.getElementById('reviewSubmitBtn');
+        const orig = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Slanje...';
+        
+        try {
+            const resp = await fetch(`${SITE_CONFIG.url}/api/reviews/create.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    conversation_id: this.currentConversation,
+                    rating: this._reviewRating,
+                    title: document.getElementById('reviewTitle').value.trim(),
+                    comment: comment,
+                    csrf_token: (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.csrfToken) ? SITE_CONFIG.csrfToken : ''
+                })
+            });
+            const res = await resp.json();
+            if (res.success) {
+                const modalEl = document.getElementById('reviewModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                this.showNotification('success', res.message || 'Hvala na oceni!');
+                const rateBtn = document.getElementById('rateUserBtn');
+                if (rateBtn) {
+                    rateBtn.dataset.reviewed = '1';
+                    rateBtn.classList.remove('btn-outline-warning');
+                    rateBtn.classList.add('btn-warning');
+                }
+            } else {
+                this.showReviewError(errBox, res.message || 'Greška pri slanju ocene.');
+            }
+        } catch (e) {
+            this.showReviewError(errBox, 'Nema povezivanja sa serverom.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+        }
+    }
+    
+    showReviewError(box, msg) {
+        box.textContent = msg;
+        box.classList.remove('d-none');
+    }
+
 }
 
 // Inicijalizacija

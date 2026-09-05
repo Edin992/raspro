@@ -7,6 +7,9 @@ $pageTitle = 'Zaboravili ste lozinku? - Rasprodaja.rs';
 $pageDescription = 'Resetujte svoju lozinku na Rasprodaja.rs';
 $pageSpecificCSS = [];
 $pageSpecificJS = ['forgot-password.js'];
+
+// reCAPTCHA v3 (anti-bot na reset lozinke)
+echo recaptcha_render_scripts();
 //$showBreadcrumbs = true;
 ?>
 

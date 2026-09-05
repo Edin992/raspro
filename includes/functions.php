@@ -3506,4 +3506,34 @@ function sendEmailWithAttachment($to, $subject, $htmlContent, $attachmentPath, $
 }
 
 
+
+// ============================================
+// NOTIFIKACIJE - zajednicki helper
+// ============================================
+/**
+ * Kreira notifikaciju (ne ruši pozivaoca ako nesto pukne).
+ */
+function notifyUser($userId, $type, $title, $message, $data = null) {
+    $userId = (int) $userId;
+    if ($userId <= 0) {
+        return false;
+    }
+    try {
+        $db = getDatabaseConnection();
+        $stmt = $db->prepare("
+            INSERT INTO notifications (user_id, type, title, message, data, is_read, created_at)
+            VALUES (?, ?, ?, ?, ?, 0, NOW())
+        ");
+        return $stmt->execute([
+            $userId,
+            $type,
+            mb_substr((string) $title, 0, 100),
+            mb_substr((string) $message, 0, 500),
+            $data !== null ? json_encode($data, JSON_UNESCAPED_UNICODE) : null
+        ]);
+    } catch (Throwable $e) {
+        error_log('notifyUser(' . $userId . '): ' . $e->getMessage());
+        return false;
+    }
+}
 ?>

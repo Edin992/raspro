@@ -866,3 +866,55 @@ section h2::after {
     border-color: #6c757d;
     color: #e9ecef !important;
 }
+
+/* ============================================ */
+/* NOTIFIKACIJE - panel i badge (notifications.js) */
+/* ============================================ */
+.list-group-item.active-notif {
+    background: rgba(13, 110, 253, 0.06);
+    border-left: 3px solid #0d6efd;
+}
+#notifListBody .list-group-item {
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.notif-badge {
+    min-width: 18px;
+}
+
+/* ============================================ */
+/* MOBILE SIDE MENU */
+/* ============================================ */
+#mobileSideMenu .nav-link {
+    color: var(--bs-body-color, #212529);
+    border-radius: 8px;
+}
+#mobileSideMenu .nav-link:hover {
+    background: rgba(13,110,253,.08);
+}
+#mobileSideMenu .nav-link.active {
+    background: rgba(13,110,253,.1);
+}
+
+/* ============================================ */
+/* REVIEW / OCENJIVANJE */
+/* ============================================ */
+.star-rating-input {
+    font-size: 1.75rem;
+    cursor: pointer;
+    user-select: none;
+}
+.star-rating-input .fa-star,
+.star-rating-input .far.fa-star {
+    color: #d1d5db;
+    transition: color .12s ease, transform .12s ease;
+    margin: 0 3px;
+}
+.star-rating-input .fa-star.checked,
+.star-rating-input .far.fa-star.checked {
+    color: #f59e0b;
+}
+.star-rating-input .hovered {
+    transform: scale(1.15);
+}
+.review-stars .fas.fa-star { color: #f59e0b; }
+.review-stars .far.fa-star { color: #d1d5db; }

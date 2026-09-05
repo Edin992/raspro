@@ -74,8 +74,29 @@ class ForgotPasswordPage {
         this.showLoading(true);
         this.hideMessages();
         
+        // reCAPTCHA v3 token (ako je ukljucen na serveru)
+        let recaptchaToken = '';
+        const rcCfg = window.RECAPTCHA;
+        if (rcCfg && rcCfg.enabled) {
+            try {
+                recaptchaToken = await new Promise((resolve, reject) => {
+                    grecaptcha.ready(() => {
+                        grecaptcha.execute(rcCfg.siteKey, { action: 'reset_password' })
+                            .then(resolve).catch(reject);
+                    });
+                    setTimeout(() => reject(new Error('recaptcha-timeout')), 10000);
+                });
+            } catch (err) {
+                console.error('reCAPTCHA error:', err);
+                this.showError('reCAPTCHA verifikacija nije uspela. Proverite vezu i pokušajte ponovo.');
+                this.showLoading(false);
+                return;
+            }
+        }
+        
         const formData = {
-            email: this.emailInput.value.trim()
+            email: this.emailInput.value.trim(),
+            recaptcha_token: recaptchaToken
         };
         
         try {

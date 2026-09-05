@@ -752,13 +752,114 @@ function createNotificationSettingsModal() {
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 }
 
-window.savePrivacySettings = function() {
-    showToast('info', 'Info', 'Funkcija će biti implementirana u narednom update-u.');
+// ============================================
+// PODESAVAANJA (privatnost + notifikacije) - pravi save/load
+// Backend: api/user/settings.php (GET/POST, user_settings tabela)
+// ============================================
+let _userSettingsCache = null;
+
+async function loadUserSettings() {
+    if (_userSettingsCache) return _userSettingsCache;
+    try {
+        const resp = await fetch(`${SITE_CONFIG.url}/api/user/settings.php`, {
+            credentials: 'same-origin'
+        });
+        const res = await resp.json();
+        if (res.success && res.settings) {
+            _userSettingsCache = res.settings;
+        }
+    } catch (e) {
+        console.warn('loadUserSettings:', e);
+    }
+    return _userSettingsCache;
+}
+
+function applySettingsToForms(settings) {
+    if (!settings) return;
+    const p = settings.privacy || {};
+    const n = settings.notifications || {};
+    
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
+    const setChk = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.checked = !!val; };
+    
+    setVal('profile_visibility', p.profile_visibility);
+    setVal('message_privacy', p.message_privacy);
+    // show_email postoji i u edit formi i u privacy formi - sinhronizuj oba
+    setChk('show_email', p.show_email);
+    setChk('show_email_setting', p.show_email);
+    setChk('show_phone_setting', p.show_phone);
+    
+    setChk('email_messages', n.email_messages);
+    setChk('email_replies', n.email_replies);
+    setChk('email_newsletter', n.email_newsletter);
+    setChk('push_messages', n.push_messages);
+    setChk('push_sales', n.push_sales);
+}
+
+async function saveSettingsGroup(groupObj, successMsg) {
+    const csrf = (document.querySelector('input[name="csrf_token"]') || {}).value ||
+                 (typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG.csrfToken : '');
+    const btns = document.querySelectorAll('#privacySettingsModal button.btn-primary, #notificationSettingsModal button.btn-primary');
+    btns.forEach(b => { b.disabled = true; });
+    try {
+        const resp = await fetch(`${SITE_CONFIG.url}/api/user/settings.php`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify(Object.assign({ csrf_token: csrf }, groupObj))
+        });
+        const res = await resp.json();
+        if (res.success) {
+            _userSettingsCache = res.settings || _userSettingsCache;
+            showToast('success', 'Uspešno', successMsg);
+            const openModal = document.querySelector('.modal.show');
+            if (openModal) bootstrap.Modal.getInstance(openModal)?.hide();
+        } else {
+            showToast('error', 'Greška', res.message || 'Neuspešno čuvanje.');
+        }
+    } catch (e) {
+        showToast('error', 'Greška', 'Nema povezivanja sa serverom.');
+    } finally {
+        btns.forEach(b => { b.disabled = false; });
+    }
+}
+
+window.savePrivacySettings = async function() {
+    await saveSettingsGroup({
+        privacy: {
+            profile_visibility: (document.getElementById('profile_visibility') || {}).value || 'public',
+            message_privacy: (document.getElementById('message_privacy') || {}).value || 'everyone',
+            show_email: !!(document.getElementById('show_email_setting') || {}).checked,
+            show_phone: !!(document.getElementById('show_phone_setting') || {}).checked
+        }
+    }, 'Podešavanja privatnosti su sačuvana.');
 };
 
-window.saveNotificationSettings = function() {
-    showToast('info', 'Info', 'Funkcija će biti implementirana u narednom update-u.');
+window.saveNotificationSettings = async function() {
+    await saveSettingsGroup({
+        notifications: {
+            email_messages: !!(document.getElementById('email_messages') || {}).checked,
+            email_replies: !!(document.getElementById('email_replies') || {}).checked,
+            email_newsletter: !!(document.getElementById('email_newsletter') || {}).checked,
+            push_messages: !!(document.getElementById('push_messages') || {}).checked,
+            push_sales: !!(document.getElementById('push_sales') || {}).checked
+        }
+    }, 'Podešavanja notifikacija su sačuvana.');
 };
+
+// Prefill kad se modal otvara + inicijalno ucitavanje
+document.addEventListener('DOMContentLoaded', function() {
+    loadUserSettings().then(applySettingsToForms);
+    
+    ['privacySettingsModal', 'notificationSettingsModal'].forEach(function(modalId) {
+        const el = document.getElementById(modalId);
+        if (el) {
+            el.addEventListener('show.bs.modal', function() {
+                loadUserSettings().then(applySettingsToForms);
+            });
+        }
+    });
+});
 
 // ============================================
 // TOOLTIPS & KEYBOARD (iz profile.js)

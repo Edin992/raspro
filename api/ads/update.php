@@ -27,7 +27,7 @@ header('Access-Control-Allow-Headers: Content-Type');
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/functions.php';
-require_once __DIR__ . '/../../includes/packages.php';
+require_once __DIR__ . '/../../includes/packages.php';require_once __DIR__ . '/../../includes/auth.php'; // checkCSRFToken
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -42,6 +42,13 @@ if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
 }
 
 $userId = $_SESSION['user_id'];
+
+// FIX: CSRF zastita (forma vec sadrzi csrf_token skriveno polje)
+if (!checkCSRFToken($_POST)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Sesija je istekla. Osvežite stranicu i pokušajte ponovo.']);
+    exit();
+}
 
 // Proveri da li je prosleđen ID oglasa
 if (!isset($_POST['ad_id']) || empty($_POST['ad_id'])) {
@@ -271,8 +278,8 @@ try {
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Greška pri ažuriranju oglasa: ' . $e->getMessage()
+        'message' => 'Greška pri ažuriranju oglasa. Pokušajte ponovo.'
     ]);
-    error_log("Update ad error: " . $e->getMessage());
+    error_log("Update ad error: " . $e->getMessage()); // samo u log
 }
 ?>

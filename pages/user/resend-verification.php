@@ -18,6 +18,18 @@ $messageType = '';
 
 // Ako je POST zahtev za ponovno slanje
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
+    // FIX: rate limit - endpoint salje email i mogao je biti zlostavljan
+    if (function_exists('apc_fetch')) {
+        $rlKey = 'raspro_resend_rl_' . md5((string)($_SERVER['REMOTE_ADDR'] ?? 'na'));
+        $ok = false;
+        $hits = (int) apc_fetch($rlKey, $ok);
+        if ($ok && $hits >= 3) {
+            $message = 'Previše zahteva. Sačekajte 10 minuta i pokušajte ponovo.';
+            $messageType = 'danger';
+            goto after_resend; // preskoci slanje
+        }
+        if (!@apc_inc($rlKey, 1, $incOk)) { apc_add($rlKey, 1, 600); }
+    }
     $email = trim($_POST['email']);
     
     try {
@@ -73,11 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         }
         
     } catch (Exception $e) {
-        $message = 'Došlo je do greške: ' . $e->getMessage();
+        $message = 'Došlo je do greške. Pokušajte ponovo kasnije.'; // FIX: interni detalji ne idu korisniku
         $messageType = 'danger';
         error_log("Resend verification error: " . $e->getMessage());
     }
 }
+
+after_resend:
 ?>
 
 <div class="container py-5">

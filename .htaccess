@@ -3,6 +3,17 @@ RewriteEngine On
 RewriteBase /
 
 # ============================================
+# ZASTITA OSETLJIVIH FAJLOVA (server-side)
+# ============================================
+# Internalni PHP fajlovi - nikad direktno preko URL-a
+RewriteRule ^(config|includes|libs|cron)/ - [F,L,NC]
+# SQL dump baze - NE SME DA JAVNO VISI! (sadrzi strukturu + lozinke ako ga premestis u repozitorij, obrisati i odavde i sa servera)
+RewriteRule \.(sql|log|ini|env|bak|old|swp|dist)(\..*)?$ - [F,L,NC]
+# Test/debug skripte - skloniti sa produkcionog servera, a do tada bar blokirati
+RewriteRule ^(phpinfo|test-pdf|admin/test)\.php$ - [F,L,NC]
+
+
+# ============================================
 # SITEMAP RUTE - MORAJU BITI NA SAMOM VRHU!
 # ============================================
 
@@ -140,6 +151,7 @@ RewriteRule ^profile/?$ index.php?page=profile [QSA,L]
 RewriteRule ^profile/([0-9]+)/?$ index.php?page=profile&id=$1 [QSA,L]
 RewriteRule ^dashboard/?$ index.php?page=dashboard [QSA,L]
 RewriteRule ^messages/?$ index.php?page=messages [QSA,L]
+RewriteRule ^notifications/?$ index.php?page=notifications [QSA,L]
 
 # VERIFIKACIJA
 RewriteRule ^verify-email/?$ index.php?page=verify-email [QSA,L]

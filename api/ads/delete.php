@@ -8,7 +8,7 @@
 session_start();
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/functions.php';
-require_once __DIR__ . '/../../includes/packages.php';
+require_once __DIR__ . '/../../includes/packages.php';require_once __DIR__ . '/../../includes/auth.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -31,6 +31,13 @@ if (!isset($_SESSION['user_id'])) {
 $input = json_decode(file_get_contents('php://input'), true);
 if (!$input) {
     $input = $_POST;
+}
+
+$adId = isset($input['ad_id']) ? intval($input['ad_id']) : 0;// FIX: CSRF (JS salje csrf_token u JSON telu - profil i ad-detail forme)
+if (!checkCSRFToken(is_array($input) ? $input : [])) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Sesija je istekla. Osvežite stranicu i pokušajte ponovo.']);
+    exit();
 }
 
 $adId = isset($input['ad_id']) ? intval($input['ad_id']) : 0;

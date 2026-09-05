@@ -2,10 +2,12 @@
 /**
  * api/user/change-password.php - Promena lozinke (SA EMAIL OBAVEŠTENJEM)
  */
-session_start();
+// FIX: session_start() maknut - constants.php je pokrece sa sigurnim kolacicima
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../includes/remember-me.php';
 require_once __DIR__ . '/../../includes/functions.php';
 require_once __DIR__ . '/../../includes/auth.php';
+require_once __DIR__ . '/../../includes/packages.php'; // FIX: logUserActivity() je ovde - bez include-a je bio FATAL
 header('Content-Type: application/json');
 
 // Proveri da li je korisnik ulogovan
@@ -16,7 +18,7 @@ if (!isLoggedIn()) {
 }
 
 // Proveri CSRF token
-if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== ($_SESSION['csrf_token'] ?? '')) {
+if (!isset($_POST['csrf_token']) || !hash_equals((string)($_SESSION['csrf_token'] ?? ''), (string)$_POST['csrf_token'])) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Nevažeći CSRF token.']);
     exit;
@@ -57,17 +59,24 @@ if (!$user) {
 }
 
 // Proveri trenutnu lozinku
-$stmt = $db->prepare("SELECT password FROM users WHERE id = ?");
+// KRITICAN FIX: ranije se citala kolona `password` koja NE POSTOJI
+// (u bazi je `password_hash`), pa je provera UVEK padala sa
+// "Trenutna lozinka nije tačna" i promena nije radila.
+$stmt = $db->prepare("SELECT password_hash FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $currentUser = $stmt->fetch();
+if (!$currentUser) {
+    echo json_encode(['success' => false, 'message' => 'Korisnik nije pronađen.']);
+    exit;
+}
 
-if (!password_verify($currentPassword, $currentUser['password'])) {
+if (!password_verify($currentPassword, $currentUser['password_hash'])) {
     echo json_encode(['success' => false, 'message' => 'Trenutna lozinka nije tačna.']);
     exit;
 }
 
 // Proveri da li je nova lozinka ista kao stara
-if (password_verify($newPassword, $currentUser['password'])) {
+if (password_verify($newPassword, $currentUser['password_hash'])) {
     echo json_encode(['success' => false, 'message' => 'Nova lozinka ne može biti ista kao trenutna.']);
     exit;
 }
@@ -81,6 +90,13 @@ try {
     
     if (!$result) {
         throw new Exception("Greška pri ažuriranju lozinke");
+    }
+    
+    // FIX: posle promene lozinke brišemo sve 'zapamti me' tokenize
+    // sa drugih uredjaja (stari uređaji ostaju prijavljeni samo kroz
+    // aktivne sesije, a ne kroz kolacice od 30 dana)
+    if (function_exists('rememberMeClear')) {
+        rememberMeClear($userId);
     }
     
     // Loguj aktivnost
@@ -183,7 +199,7 @@ try {
     error_log("Password change error: " . $e->getMessage());
     echo json_encode([
         'success' => false, 
-        'message' => 'Došlo je do serverske greške: ' . $e->getMessage()
+        'message' => 'Došlo je do serverske greške. Pokušajte ponovo.'
     ]);
 }
 ?>

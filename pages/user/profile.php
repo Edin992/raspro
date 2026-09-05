@@ -46,6 +46,38 @@ if (!$user) {
     redirect('/404');
 }
 
+// ============================================
+// FIX: Enforce "Ko moze da vidi vas profil" (podesavanja privatnosti)
+// pre ovoga je opcija samo postojala u modalu, bez ikakvog efekta.
+// ============================================
+if (!$isOwner) {
+    try {
+        $stmtVis = $db->prepare("SELECT settings FROM user_settings WHERE user_id = ? LIMIT 1");
+        $stmtVis->execute([$viewedUserId]);
+        $rowVis = $stmtVis->fetch();
+        if ($rowVis && !empty($rowVis['settings'])) {
+            $vSet = is_string($rowVis['settings']) ? json_decode($rowVis['settings'], true) : $rowVis['settings'];
+            $vis = is_array($vSet) ? ($vSet['privacy']['profile_visibility'] ?? 'public') : 'public';
+            $adminBypass = function_exists('isAdmin') && (bool) @$_SESSION['is_admin'];
+            if (!$adminBypass && $vis === 'none') {
+                http_response_code(404);
+                echo '<div class="container py-5"><div class="alert alert-warning text-center">'
+                   . '<h4><i class="fas fa-user-lock me-2"></i>Ovaj profil je privatan</h4>'
+                   . '<p class="mb-3">Korisnik je sakrio svoj profil.</p>'
+                   . '<a href="/" class="btn btn-primary">Nazad na početnu</a></div></div>';
+                return;
+            }
+            if (!$adminBypass && $vis === 'registered' && !isLoggedIn()) {
+                $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
+                redirect('/login');
+            }
+        }
+    } catch (Throwable $e) {
+        // user_settings mozda jos nije migrirana - ne blokiramo prikaz
+        error_log('profile visibility check: ' . $e->getMessage());
+    }
+}
+
 // CSRF token za formu
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -675,11 +707,19 @@ $inlineStyles = "
                                 <?php endif; ?>
                                 
                                 <?php if (!empty($review['ad_title'])): ?>
+                                <?php if (!empty($review['review_type']) && $review['review_type'] !== 'general'): ?>
+                                <span class="badge bg-light text-dark border mt-1">
+                                    <i class="fas <?php echo $review['review_type'] === 'seller' ? 'fa-store' : 'fa-user'; ?> me-1"></i>
+                                    <?php echo $review['review_type'] === 'seller' ? 'Ocena prodavca' : 'Ocena kupca'; ?>
+                                </span>
+                                <?php endif; ?>
+                                <?php if (!empty($review['ad_title'])): ?>
                                 <div class="mt-2">
                                     <small class="text-muted">
                                         Oglas: <?php echo htmlspecialchars($review['ad_title']); ?>
                                     </small>
                                 </div>
+                                <?php endif; ?>
                                 <?php endif; ?>
                                 
                                 <div class="text-end mt-3">
