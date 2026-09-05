@@ -10,7 +10,7 @@ $email = $_SESSION['user_email_temp'] ?? $_GET['email'] ?? '';
 
 // Ako je korisnik već prijavljen i verifikovan, preusmeri
 if (isLoggedIn() && isUserVerified()) {
-    redirect('?page=dashboard');
+    redirect('/profile');
 }
 
 $message = '';
@@ -22,21 +22,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
     
     try {
         $db = getDatabaseConnection();
-        $stmt = $db->prepare("SELECT id, first_name, last_name FROM users WHERE email = ? AND is_verified = 0");
+        $stmt = $db->prepare("SELECT id, first_name, last_name, company_name, account_type FROM users WHERE email = ? AND is_verified = 0");
         $stmt->execute([$email]);
         $user = $stmt->fetch();
         
         if ($user) {
-            $result = resendVerificationEmail($user['id']);
+            // Generiši novi token
+            $verificationToken = bin2hex(random_bytes(16));
+            $verificationExpires = date('Y-m-d H:i:s', strtotime('+24 hours'));
             
-            if ($result['success']) {
+            // Ažuriraj token
+            $stmt = $db->prepare("UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?");
+            $stmt->execute([$verificationToken, $verificationExpires, $user['id']]);
+            
+            // Pripremi ime
+            if ($user['account_type'] === 'company' && !empty($user['company_name'])) {
+                $userName = $user['company_name'];
+            } else {
+                $userName = trim($user['first_name'] . ' ' . $user['last_name']);
+                if (empty($userName)) {
+                    $userName = 'Korisniče';
+                }
+            }
+            
+            // Generiši link
+            $siteUrl = defined('SITE_URL') ? SITE_URL : 'https://rasprodaja.rs';
+            $verificationLink = $siteUrl . '/?page=verify-email&token=' . $verificationToken;
+            
+            // Generiši email
+            $emailContent = generateVerificationEmail($userName, $verificationLink);
+            
+            // Pošalji email
+            $emailSent = sendEmail(
+                $email,
+                'Verifikujte Vaš nalog na Rasprodaja.rs',
+                $emailContent
+            );
+            
+            if ($emailSent) {
                 $message = 'Novi verifikacioni email je poslat na ' . $email . '.';
                 $messageType = 'success';
-                
-                // Sačuvaj u sesiji za display
                 $_SESSION['success_message'] = $message;
             } else {
-                $message = $result['message'];
+                $message = 'Greška pri slanju email-a. Molimo pokušajte kasnije.';
                 $messageType = 'danger';
             }
         } else {
@@ -47,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
     } catch (Exception $e) {
         $message = 'Došlo je do greške: ' . $e->getMessage();
         $messageType = 'danger';
+        error_log("Resend verification error: " . $e->getMessage());
     }
 }
 ?>
@@ -62,12 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                 </div>
                 
                 <div class="card-body p-4 p-md-5">
-                    <?php if ($message): ?>
-                        <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
-                            <?php echo htmlspecialchars($message); ?>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    <?php endif; ?>
+                    <div id="alert-container">
+                        <?php if ($message): ?>
+                            <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
+                                <?php echo htmlspecialchars($message); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                     
                     <div class="text-center mb-4">
                         <i class="fas fa-envelope fa-4x text-warning mb-3"></i>
@@ -77,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                         </p>
                     </div>
                     
-                    <form method="POST" action="/resend-verification">
+                    <form id="resend-form" method="POST" action="/resend-verification">
                         <div class="mb-4">
                             <label for="email" class="form-label">Vaša email adresa</label>
                             <input type="email" 
@@ -93,15 +124,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
                         </div>
                         
                         <div class="d-grid gap-3">
-                            <button type="submit" class="btn btn-warning btn-lg">
+                            <button type="submit" id="submit-btn" class="btn btn-warning btn-lg">
                                 <i class="fas fa-paper-plane me-2"></i> Pošalji ponovo
                             </button>
                             
                             <div class="text-center mt-3">
-                                <a href="?page=login" class="btn btn-outline-secondary">
+                                <a href="/login" class="btn btn-outline-secondary">
                                     <i class="fas fa-arrow-left me-2"></i> Nazad na prijavu
                                 </a>
-                                <a href="?page=contact" class="btn btn-outline-primary ms-2">
+                                <a href="/contact" class="btn btn-outline-primary ms-2">
                                     <i class="fas fa-question-circle me-2"></i> Pomoc
                                 </a>
                             </div>
@@ -129,3 +160,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('resend-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const alertContainer = document.getElementById('alert-container');
+    const emailInput = document.getElementById('email');
+    
+    if (!form) return;
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Validacija
+        const email = emailInput.value.trim();
+        if (!email || !isValidEmail(email)) {
+            showAlert('danger', 'Unesite validnu email adresu');
+            return;
+        }
+        
+        // Prikaži loading
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Slanje...';
+        submitBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/user/resend-verification.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showAlert('success', result.message);
+                emailInput.value = '';
+            } else {
+                showAlert('danger', result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('danger', 'Greška pri povezivanju sa serverom');
+        } finally {
+            // Vrati dugme u prvobitno stanje
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+    
+    function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+    
+    function showAlert(type, message) {
+        alertContainer.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        // Auto dismiss after 5 seconds
+        setTimeout(() => {
+            const alert = alertContainer.querySelector('.alert');
+            if (alert) {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alertContainer.innerHTML = '';
+                }, 150);
+            }
+        }, 5000);
+    }
+});
+</script>
